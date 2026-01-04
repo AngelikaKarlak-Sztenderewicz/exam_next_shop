@@ -5,12 +5,13 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+ provider = "prisma-client-js"
+  output   = "../src/generated/prisma" 
 }
 
 datasource db {
   provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
@@ -23,18 +24,27 @@ model User {
 
 model Category {
   id       Int       @id @default(autoincrement())
-  name     String
+  name     String    @unique
+  products Product[]
+}
+
+model Brand {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique 
   products Product[]
 }
 
 model Product {
   id         Int      @id @default(autoincrement())
-  name       String
+  name       String   @unique
   price      Float
   stock      Int
   imageUrl   String
+  description String? 
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])
+   brandId    Int
+  brand      Brand    @relation(fields: [brandId], references: [id])
   orderItems OrderItem[]
 }
 
