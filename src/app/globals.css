@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
 body {
-  font-family: system-ui, sans-serif;
+  @apply bg-black text-white;
 }

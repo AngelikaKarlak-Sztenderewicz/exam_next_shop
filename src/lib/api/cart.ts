@@ -1,6 +1,4 @@
-import { PrismaClient } from "../../generated/prisma";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 const HARD_CODED_USER_ID = 1;
 
 export async function getCart() {

@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "DevstockHub",
-  description: "Sklep na zaliczenie",
+  description: "Sklep internetowy",
 };
 
 export default function RootLayout({
@@ -13,10 +13,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
-        <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
-          <div className="font-bold text-xl">DevstockHub</div>
-          <nav className="space-x-4">
+      <body className="flex flex-col min-h-screen ">
+        <header className=" p-4 items-center">
+          <div className="flex justify-between">
+            <h1>DevstockHub</h1>
+            <div>
+              <Link href="/cart" className="hover:underline">
+                Koszyk
+              </Link>
+              i takie tam
+            </div>
+          </div>
+          <nav className="flex gap-4">
             <Link href="/" className="hover:underline">
               Home
             </Link>
@@ -31,7 +39,10 @@ export default function RootLayout({
 
         <main className="flex-1 p-4">{children}</main>
 
-        <footer className="bg-gray-800 text-white p-4 mt-auto text-center">
+        <footer
+          className="bg-gray-900 
+         p-4 mt-auto text-center"
+        >
           Contact: email@example.com | Tel: 123-456-789
         </footer>
       </body>

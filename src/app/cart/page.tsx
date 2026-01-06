@@ -33,11 +33,11 @@ export default function CartPage() {
               <span>
                 {item.product.name} x {item.quantity}
               </span>
-              <span>{item.totalPrice.toFixed(2)} zł</span>
+              <span>{item.totalPrice.toFixed(2)}$</span>
             </div>
           ))}
           <div className="font-bold text-lg mt-2">
-            Suma: {cart.totalAmount.toFixed(2)} zł
+            Suma: {cart.totalAmount.toFixed(2)} $
           </div>
         </div>
       )}

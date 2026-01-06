@@ -1,13 +1,15 @@
-import { PrismaClient } from "../../generated/prisma";
 import { ApiError } from "@/lib/apiError";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
+{
+  /* API route, który zwraca kategorie*/
+}
 
 export async function GET() {
   const categories = await prisma.category.findMany();
 
   if (!categories || categories.length === 0)
-    throw new ApiError("Nie znaleziono kategorii", 404);
+    throw new ApiError("Category not found", 404);
 
   return new Response(JSON.stringify(categories), { status: 200 });
 }
