@@ -2,22 +2,23 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@/lib/api/products";
+import Link from "next/link";
 
 type Category = { id: number; name: string };
 
 interface ProductsPageClientProps {
   categories: Category[];
+  initialCategory: string;
 }
 
 export default function ProductsPageClient({
   categories,
+  initialCategory,
 }: ProductsPageClientProps) {
-  const searchParams = useSearchParams();
   const router = useRouter();
-
-  const initialCategory = searchParams.get("category") || "All";
+  const searchParams = useSearchParams();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -129,24 +130,29 @@ export default function ProductsPageClient({
           <>
             <div className="flex flex-wrap gap-4 justify-start">
               {products.map((p) => (
-                <div
+                <Link
                   key={p.id}
-                  className="flex-none w-[220px] h-[290px] bg-customGray rounded shadow flex flex-col items-center justify-center p-4"
+                  href={`/products/${p.id}`}
+                  className="flex-none w-[220px] h-[290px]"
                 >
-                  <Image
-                    src={p.imageUrl}
-                    alt={p.name}
-                    width={120}
-                    height={120}
-                    className="mb-4 rounded"
-                    style={{ objectFit: "cover" }}
-                  />
-                  <h2 className="text-white font-bold text-center">{p.name}</h2>
-                  <p className="text-white font-semibold">{p.price} $</p>
-                  <p className="text-gray-400 text-sm text-center">
-                    {p.category.name} - {p.brand.name}
-                  </p>
-                </div>
+                  <div className=" bg-customGray rounded shadow flex flex-col items-center justify-center p-4">
+                    <Image
+                      src={p.imageUrl}
+                      alt={p.name}
+                      width={120}
+                      height={120}
+                      className="mb-4 rounded"
+                      style={{ objectFit: "cover" }}
+                    />
+                    <h2 className="text-white font-bold text-center">
+                      {p.name}
+                    </h2>
+                    <p className="text-white font-semibold">{p.price} $</p>
+                    <p className="text-gray-400 text-sm text-center">
+                      {p.category.name} - {p.brand.name}
+                    </p>
+                  </div>
+                </Link>
               ))}
             </div>
 

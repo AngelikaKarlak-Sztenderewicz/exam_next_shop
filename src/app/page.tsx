@@ -71,7 +71,7 @@ export default async function HomePage() {
                     />
                   </div>
                   <h3 className="font-bold text-center mt-2">{p.name}</h3>
-                  <p className="font-semibold">{p.price} zł</p>
+                  <p className="font-semibold">{p.price} $</p>
                 </div>
               </Link>
             )
@@ -84,20 +84,19 @@ export default async function HomePage() {
         <h2 className="text-3xl font-bold mb-6 text-white">Brands</h2>
         <div className="flex gap-4 flex-wrap justify-center">
           {brands.map((b: Brand) => (
-            <div
-              key={b.id}
-              className="flex-none w-[220px] rounded-[8px] p-4 shadow bg-customGray flex flex-col items-center"
-            >
-              <div className="w-1/3 aspect-square relative mb-2">
-                <Image
-                  src={b.imageUrl || ""}
-                  alt={b.name}
-                  fill
-                  className="object-contain"
-                />
+            <Link key={b.id} href={`/products/brand/${b.name}`}>
+              <div className="flex-none w-[220px] rounded-[8px] p-4 shadow bg-customGray flex flex-col items-center">
+                <div className="w-1/3 aspect-square relative mb-2">
+                  <Image
+                    src={b.imageUrl || ""}
+                    alt={b.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <div className="font-bold text-center">{b.name}</div>
               </div>
-              <div className="font-bold text-center">{b.name}</div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

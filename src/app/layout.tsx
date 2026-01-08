@@ -1,5 +1,8 @@
-import Link from "next/link";
+
 import "./globals.css";
+import Providers from "@/components/Providers";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "DevstockHub",
@@ -14,37 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen ">
-        <header className=" p-4 items-center">
-          <div className="flex justify-between">
-            <h1>DevstockHub</h1>
-            <div>
-              <Link href="/cart" className="hover:underline">
-                Koszyk
-              </Link>
-              i takie tam
-            </div>
-          </div>
-          <nav className="flex gap-4">
-            <Link href="/" className="hover:underline">
-              Home
-            </Link>
-            <Link href="/products" className="hover:underline">
-              Products
-            </Link>
-            <Link href="/contact" className="hover:underline">
-              Contact
-            </Link>
-          </nav>
-        </header>
-
-        <main className="flex-1 p-4">{children}</main>
-
-        <footer
-          className="bg-gray-900 
-         p-4 mt-auto text-center"
-        >
-          Contact: email@example.com | Tel: 123-456-789
-        </footer>
+        <Providers>
+          <Header />
+          <main className="flex-1 p-4">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
