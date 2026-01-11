@@ -1,4 +1,4 @@
-export function UserIcon({ className = "w-6 h-6" }) {
+export function UserIcon({ className = "w-6 h-6 text-iconColor" }) {
   return (
     <svg
       className={className}
@@ -8,7 +8,7 @@ export function UserIcon({ className = "w-6 h-6" }) {
       viewBox="0 0 24 24"
     >
       <circle cx="12" cy="8" r="4" />
-      <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+      <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" />
     </svg>
   );
 }

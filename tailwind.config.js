@@ -4,7 +4,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        customGray: "#383A42",
+        customGray: "#262626",
+        iconColor: "#FCFCFC",
+        submitButtonColor: "#F29145",
       },
     },
   },

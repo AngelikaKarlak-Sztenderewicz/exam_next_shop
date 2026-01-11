@@ -1,23 +1,42 @@
-"use client";
+'use client';
 
-import React from "react";
+import { useCart } from '@/store/cartStore';
+import Button from './Button';
 
 interface Props {
   productId: number;
   productName: string;
+  price: number;
+  imageUrl: string;
+  stock: number;
 }
 
-export default function AddToCartButton({ productId, productName }: Props) {
+export default function AddToCartButton({
+  productId,
+  productName,
+  price,
+  imageUrl,
+  stock,
+}: Props) {
+  const addToCart = useCart((s) => s.addToCart);
+
   function handleClick() {
-    alert(`${productName} added to cart!`);
+    addToCart({
+      id: productId,
+      name: productName,
+      price,
+      imageUrl,
+      stock,
+      quantity: 1,
+    });
   }
 
   return (
-    <button
+    <Button
       onClick={handleClick}
-      className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      className=" border border-submitButtonColor bg-transparent text-submitButtonColor"
     >
       Add to Cart
-    </button>
+    </Button>
   );
 }

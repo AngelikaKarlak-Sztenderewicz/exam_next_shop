@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 interface Props {
   params: { name: string };
@@ -33,6 +34,14 @@ export default async function BrandPage({ params }: Props) {
 
   return (
     <div className="p-6">
+      <Breadcrumb
+        items={[
+          { label: "Products", href: "/products" },
+          {
+            label: brand.name,
+          },
+        ]}
+      />
       <h1 className="text-3xl font-bold mb-6 text-white">
         Choosen brand: {brand.name}
       </h1>

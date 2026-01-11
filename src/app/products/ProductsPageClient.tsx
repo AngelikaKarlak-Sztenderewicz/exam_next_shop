@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@/lib/api/products";
 import Link from "next/link";
+import ProductCard from "@/components/ProductCard";
 
 type Category = { id: number; name: string };
 
@@ -25,7 +26,7 @@ export default function ProductsPageClient({
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortOption] = useState("nameAsc");
-  const [showCount] = useState(9);
+  const [showCount, setShowCount] = useState(9);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
@@ -121,6 +122,26 @@ export default function ProductsPageClient({
       </div>
 
       {/* PRAWA CZĘŚĆ – PRODUKTY */}
+<div>
+
+
+     <div>
+    <h2 className="font-bold mb-2 text-white">Products per page</h2>
+    <select
+      value={showCount}
+      onChange={(e) => {
+        setPage(1); // resetujemy na stronę 1 przy zmianie liczby produktów
+        setShowCount(Number(e.target.value));
+      }}
+      className="w-full p-2 rounded bg-gray-700 text-white"
+    >
+      {[9, 12, 18].map((n) => (
+        <option key={n} value={n}>
+          {n}
+        </option>
+      ))}
+    </select>
+  </div>
       <div className="w-3/4 flex flex-col gap-6">
         {products.length === 0 ? (
           <div className="text-white font-bold text-xl text-center mt-10">
@@ -130,29 +151,15 @@ export default function ProductsPageClient({
           <>
             <div className="flex flex-wrap gap-4 justify-start">
               {products.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/products/${p.id}`}
-                  className="flex-none w-[220px] h-[290px]"
-                >
-                  <div className=" bg-customGray rounded shadow flex flex-col items-center justify-center p-4">
-                    <Image
-                      src={p.imageUrl}
-                      alt={p.name}
-                      width={120}
-                      height={120}
-                      className="mb-4 rounded"
-                      style={{ objectFit: "cover" }}
-                    />
-                    <h2 className="text-white font-bold text-center">
-                      {p.name}
-                    </h2>
-                    <p className="text-white font-semibold">{p.price} $</p>
-                    <p className="text-gray-400 text-sm text-center">
-                      {p.category.name} - {p.brand.name}
-                    </p>
-                  </div>
-                </Link>
+                 <ProductCard
+                
+                                key={p.id}
+                                id={p.id}
+                                name={p.name}
+                                price={p.price}
+                                imageUrl={p.imageUrl}
+                               stock={p.stock} 
+                              />
               ))}
             </div>
 
@@ -179,5 +186,8 @@ export default function ProductsPageClient({
         )}
       </div>
     </div>
+  
+</div>
+ 
   );
 }

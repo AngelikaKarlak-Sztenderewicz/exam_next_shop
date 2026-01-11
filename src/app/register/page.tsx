@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import Button from "@/components/Button";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 const PHONE_REGEX = /^\+\d{1,3}\d{10}$/;
@@ -164,7 +165,7 @@ export default function RegisterPage() {
       {errors.terms && (
         <p className="text-red-500 text-sm">{errors.terms.message}</p>
       )}
-      <button className="bg-blue-600  p-2 rounded">Register</button>
+      <Button className="bg-blue-600  p-2 rounded">Register</Button>
     </form>
   );
 }

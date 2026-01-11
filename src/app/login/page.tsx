@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import Button from "@/components/Button";
 
 type LoginForm = {
   identifier: string;
@@ -77,9 +78,9 @@ export default function LoginPage() {
             )}
           </div>
 
-          <button type="submit" className="mt-4 w-full bg-blue-600 p-2 rounded">
+          <Button type="submit" className="mt-4 w-full bg-blue-600 p-2 rounded">
             Continue
-          </button>
+          </Button>
         </form>
       )}
 
@@ -101,9 +102,9 @@ export default function LoginPage() {
             )}
           </div>
 
-          <button className="mt-4 w-full bg-blue-600 p-2 rounded">
+          <Button className="mt-4 w-full bg-blue-600 p-2 rounded">
             Sign in
-          </button>
+          </Button>
         </form>
       )}
 

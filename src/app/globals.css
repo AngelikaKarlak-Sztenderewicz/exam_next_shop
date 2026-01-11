@@ -20,3 +20,7 @@ label {
 ::placeholder {
   color: #b0b0b0;
 }
+
+.scroll-smooth {
+  scroll-behavior: smooth;
+}

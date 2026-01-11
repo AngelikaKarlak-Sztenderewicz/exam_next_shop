@@ -1,9 +1,9 @@
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-customGray text-gray-300">
       <div className="max-w-7xl mx-auto px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-          {/* Lewa kolumna (logo + copyright i payment badges) */}
+          {/*  Lewa kolumna (logo + copyright i payment badges) */}
           <div className="md:col-span-1">
             <div className="flex items-center">
               <h2 className="text-3xl font-extrabold tracking-tight">

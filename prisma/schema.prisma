@@ -57,16 +57,25 @@ model Order {
   userId     Int
   status     String
   totalAmount Float
+  createdAt   DateTime    @default(now())
   user       User        @relation(fields: [userId], references: [id])
   items      OrderItem[]
 }
 
 model OrderItem {
-  id        Int     @id @default(autoincrement())
-  orderId   Int
-  productId Int
-  quantity  Int
-  priceAtPurchase Float
-  order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  id                   Int     @id @default(autoincrement())
+  orderId              Int
+  productId            Int
+  quantity             Int
+  priceAtPurchase      Float
+  productName          String
+  productImageUrl      String
+  order                Order   @relation(fields: [orderId], references: [id])
+  product              Product @relation(fields: [productId], references: [id])
 }
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+} 

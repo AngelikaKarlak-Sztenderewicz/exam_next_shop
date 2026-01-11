@@ -1,12 +1,17 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { CartIcon } from "./icons/CartIcon";
-import { UserIcon } from "./icons/UserIcon";
-import { useSession } from "next-auth/react";
+import Link from 'next/link';
+import { CartIcon } from './icons/CartIcon';
+import { UserIcon } from './icons/UserIcon';
+import { useSession } from 'next-auth/react';
+import { useCart } from '@/store/cartStore';
 
 export default function Header() {
   const { data: session, status } = useSession();
+
+  const itemsCount = useCart((s) =>
+    s.items.reduce((sum, i) => sum + i.quantity, 0)
+  );
 
   return (
     <header className="p-4 items-center">
@@ -18,7 +23,7 @@ export default function Header() {
             <CartIcon />
           </Link>
 
-          {status === "authenticated" ? (
+          {status === 'authenticated' ? (
             <Link href="/account">
               <UserIcon />
             </Link>
