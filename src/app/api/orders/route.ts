@@ -3,6 +3,17 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 
+function generateInvoiceNumber() {
+  const now = new Date();
+  const date =
+    now.getFullYear().toString() +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0');
+
+  const random = Math.floor(100000000 + Math.random() * 900000000);
+  return `INV/${date}/${random}`;
+}
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
@@ -18,8 +29,11 @@ export async function POST(req: Request) {
   }
 
   try {
+    const invoiceNumber = generateInvoiceNumber();
     const order = await prisma.order.create({
+      
       data: {
+          invoiceNumber,
         totalAmount,
         status: 'PAID',
         user: {
@@ -40,7 +54,6 @@ export async function POST(req: Request) {
         },
       },
     });
-
     for (const item of items) {
       await prisma.product.update({
         where: { id: item.id },
@@ -52,7 +65,9 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json({ orderId: order.id });
+    return NextResponse.json({
+      invoiceNumber: order.invoiceNumber,
+    });
   } catch (error) {
     console.error('ORDER ERROR:', error);
     return NextResponse.json(

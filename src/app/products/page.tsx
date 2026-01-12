@@ -1,8 +1,8 @@
-import ProductsPageClient from "./ProductsPageClient";
-import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import ProductsPageClient from './ProductsPageClient';
+import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 type SearchParams = {
   category?: string;
@@ -16,11 +16,11 @@ export default async function ProductsPage({
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const params = await searchParams;
-  const initialCategory = params.category ?? "All";
+  const initialCategory = params.category ?? 'All';
 
   const categories = await prisma.category.findMany();
 

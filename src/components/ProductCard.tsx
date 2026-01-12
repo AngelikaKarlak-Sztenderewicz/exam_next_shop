@@ -34,7 +34,6 @@ export default function ProductCard({
   return (
     <Link href={`/products/${id}`} className="group">
       <div className="relative flex flex-col items-center bg-customGray rounded p-4">
-        {/* Add to cart icon */}
         <button
           onClick={handleAddToCart}
           aria-label="Add to cart"

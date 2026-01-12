@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 type Order = {
   id: number;
@@ -16,9 +16,12 @@ export default function AccountPage() {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    fetch("/api/user/orders")
+    fetch('/api/user/orders')
       .then((res) => res.json())
-      .then(setOrders);
+      .then((data) => {
+        console.log('API orders:', data);
+        setOrders(Array.isArray(data) ? data : (data.orders ?? []));
+      });
   }, []);
 
   const user = session?.user;
@@ -28,7 +31,7 @@ export default function AccountPage() {
       <div className="text-gray-400 text-sm">
         <Link href="/" className="hover:underline">
           Home
-        </Link>{" "}
+        </Link>{' '}
         &gt; <span>Profile</span>
       </div>
 
@@ -45,7 +48,7 @@ export default function AccountPage() {
             <h2 className="text-xl font-bold text-white">{user?.name}</h2>
             <p className="text-gray-400">{user?.email}</p>
             <button
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => signOut({ callbackUrl: '/' })}
               className="mt-2 bg-blue-600 p-2 rounded w-full"
             >
               Logout
@@ -62,7 +65,7 @@ export default function AccountPage() {
             <ul className="flex flex-col gap-2">
               {orders.map((order) => (
                 <li key={order.id} className="text-white">
-                  Order #{order.id} –{" "}
+                  Order #{order.id} –{' '}
                   {new Date(order.createdAt).toLocaleDateString()} – $
                   {order.totalAmount.toFixed(2)}
                 </li>

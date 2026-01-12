@@ -15,51 +15,55 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  firstName    String
-  email        String   @unique
-  phone        String  @unique
-  password     String
-  country      String
-  orders       Order[]
+  id                Int      @id @default(autoincrement())
+  firstName         String
+  email             String   @unique
+  phone             String  @unique
+  password          String
+  country           String
+  orders            Order[]
+  addresses         Address[]
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  imageUrl String?
-  products Product[]
+  id                 Int       @id @default(autoincrement())
+  name               String    @unique
+  imageUrl           String?
+  products           Product[]
 }
 
 model Brand {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  imageUrl String?
-  products Product[]
+  id                 Int       @id @default(autoincrement())
+  name               String    @unique
+  imageUrl           String?
+  products           Product[]
 }
 
 model Product {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  price      Float
-  stock      Int
-  imageUrl   String
-  description String? 
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
-   brandId    Int
-  brand      Brand    @relation(fields: [brandId], references: [id])
-  orderItems OrderItem[]
+  id                    Int      @id @default(autoincrement())
+  name                  String   @unique
+  price                 Float
+  stock                 Int
+  imageUrl              String
+  description           String? 
+  categoryId            Int
+  category              Category @relation(fields: [categoryId], references: [id])
+   brandId              Int
+  brand                 Brand    @relation(fields: [brandId], references: [id])
+  orderItems            OrderItem[]
 }
 
 model Order {
-  id         Int         @id @default(autoincrement())
-  userId     Int
-  status     String
-  totalAmount Float
-  createdAt   DateTime    @default(now())
-  user       User        @relation(fields: [userId], references: [id])
-  items      OrderItem[]
+  id                   Int         @id @default(autoincrement())
+  invoiceNumber        String
+  userId               Int
+  addressId            Int
+  status               String
+  totalAmount          Float
+  createdAt            DateTime    @default(now())
+  user                 User        @relation(fields: [userId], references: [id])
+  address              Address? @relation(fields: [addressId], references: [id]) 
+  items                OrderItem[]
 }
 
 model OrderItem {
@@ -72,6 +76,20 @@ model OrderItem {
   productImageUrl      String
   order                Order   @relation(fields: [orderId], references: [id])
   product              Product @relation(fields: [productId], references: [id])
+}
+
+model Address {
+  id                 Int      @id @default(autoincrement())
+  userId             Int
+  street             String
+  city               String
+  zip                String
+  country            String
+  isMain             Boolean  @default(false)
+  createdAt          DateTime @default(now())
+
+  user               User     @relation(fields: [userId], references: [id])
+  orders             Order[]  
 }
 
 enum OrderStatus {
