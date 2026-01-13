@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import Button from "@/components/Button";
+import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import Button from '@/components/Button';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 const PHONE_REGEX = /^\+\d{1,3}\d{10}$/;
@@ -29,14 +29,14 @@ export default function RegisterPage() {
   } = useForm<RegisterForm>();
 
   const onSubmit = async (data: RegisterForm) => {
-    const res = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
 
     if (res.ok) {
-      router.push("/register/success");
+      router.push('/register/success');
     }
   };
 
@@ -51,7 +51,7 @@ export default function RegisterPage() {
         <label htmlFor="firstName">Name</label>
         <input
           id="firstName"
-          {...register("firstName", { required: "Please enter your name" })}
+          {...register('firstName', { required: 'Please enter your name' })}
           placeholder="Name"
         />
         {errors.firstName && (
@@ -63,11 +63,11 @@ export default function RegisterPage() {
         <label htmlFor="email">Email</label>
         <input
           id="email"
-          {...register("email", {
-            required: "Please enter a valid email address.",
+          {...register('email', {
+            required: 'Please enter a valid email address.',
             pattern: {
               value: EMAIL_REGEX,
-              message: "Please enter a valid email address.",
+              message: 'Please enter a valid email address.',
             },
           })}
           placeholder="Email"
@@ -81,11 +81,11 @@ export default function RegisterPage() {
         <label htmlFor="phone">Phone number</label>
         <input
           id="phone"
-          {...register("phone", {
-            required: "Please enter your phone number.",
+          {...register('phone', {
+            required: 'Please enter your phone number.',
             pattern: {
               value: PHONE_REGEX,
-              message: "Please enter your phone number.",
+              message: 'Please enter your phone number.',
             },
           })}
           placeholder="Phone number (+48...)"
@@ -100,13 +100,13 @@ export default function RegisterPage() {
         <input
           id="password"
           type="password"
-          {...register("password", {
+          {...register('password', {
             required:
-              "Create a password which has at least 8 characters and includes at least 1 upper case letter. 1 lower case letter and 1 number.",
+              'Create a password which has at least 8 characters and includes at least 1 upper case letter. 1 lower case letter and 1 number.',
             pattern: {
               value: PASSWORD_REGEX,
               message:
-                "Create a password which has at least 8 characters and includes at least 1 upper case letter. 1 lower case letter and 1 number.",
+                'Create a password which has at least 8 characters and includes at least 1 upper case letter. 1 lower case letter and 1 number.',
             },
           })}
           placeholder="Password"
@@ -121,9 +121,9 @@ export default function RegisterPage() {
         <input
           id="confirmPassword"
           type="password"
-          {...register("confirmPassword", {
+          {...register('confirmPassword', {
             validate: (val) =>
-              val === watch("password") || "Please enter confirm password",
+              val === watch('password') || 'Please enter confirm password',
           })}
           placeholder="Confirm password"
         />
@@ -139,7 +139,7 @@ export default function RegisterPage() {
         <label htmlFor="country">Country / Region</label>
         <select
           id="country"
-          {...register("country", { required: "Country required" })}
+          {...register('country', { required: 'Country required' })}
         >
           <option value="">Select country</option>
           <option value="PL">Poland</option>
@@ -154,8 +154,8 @@ export default function RegisterPage() {
       <label className="text-sm flex gap-2 items-center">
         <input
           type="checkbox"
-          {...register("terms", {
-            required: "You must accept the terms",
+          {...register('terms', {
+            required: 'You must accept the terms',
           })}
         />
         By creating an account you agree to the Conditions of Use and Privacy

@@ -5,14 +5,15 @@ import { authOptions } from '../auth/[...nextauth]/route';
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  console.log('GET /api/addresses session:', session);
+
+  if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
- 
-const user = await prisma.user.findUnique({
-  where: { id: session.user.id },
-    include: { addresses: true } 
+  const user = await prisma.user.findUnique({
+    where: { id: Number(session.user.id) },
+    include: { addresses: true },
   });
 
   if (!user) {
@@ -24,7 +25,9 @@ const user = await prisma.user.findUnique({
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  console.log('POST /api/addresses session:', session);
+
+  if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -35,23 +38,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid address' }, { status: 400 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
-  if (!user) {
-  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-}
+  const userId = Number(session.user.id);
 
   if (isMain) {
     await prisma.address.updateMany({
-      where: { userId: user.id, isMain: true },
+      where: { userId, isMain: true },
       data: { isMain: false },
     });
   }
 
   const newAddress = await prisma.address.create({
     data: {
-      userId: user.id,
+      userId,
       street,
       city,
       zip,

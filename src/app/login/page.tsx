@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
-import { useState } from "react";
-import Button from "@/components/Button";
+import { useForm } from 'react-hook-form';
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+import Button from '@/components/Button';
 
 type LoginForm = {
   identifier: string;
@@ -27,15 +27,15 @@ export default function LoginPage() {
     const isPhone = PHONE_REGEX.test(data.identifier);
 
     if (!isEmail && !isPhone) {
-      alert("Enter valid email or phone number");
+      alert('Enter valid email or phone number');
       return;
     }
 
-    await signIn("credentials", {
+    await signIn('credentials', {
       redirect: true,
       identifier: data.identifier,
       password: data.password,
-      callbackUrl: "/",
+      callbackUrl: '/',
     });
   };
 
@@ -53,8 +53,8 @@ export default function LoginPage() {
             const isPhone = PHONE_REGEX.test(data.identifier);
 
             if (!isEmail && !isPhone) {
-              setError("identifier", {
-                message: "Enter valid email or phone number",
+              setError('identifier', {
+                message: 'Enter valid email or phone number',
               });
               return;
             }
@@ -69,7 +69,7 @@ export default function LoginPage() {
             <label htmlFor="identifier">Email or phone</label>
             <input
               id="identifier"
-              {...register("identifier", { required: true })}
+              {...register('identifier', { required: true })}
               placeholder="Email or phone"
               className="p-2 rounded"
             />
@@ -78,7 +78,7 @@ export default function LoginPage() {
             )}
           </div>
 
-          <Button type="submit" className="mt-4 w-full bg-blue-600 p-2 rounded">
+          <Button className="mt-4 w-full bg-blue-600 p-2 rounded">
             Continue
           </Button>
         </form>
@@ -93,7 +93,7 @@ export default function LoginPage() {
             <input
               id="password"
               type="password"
-              {...register("password", { required: true, minLength: 8 })}
+              {...register('password', { required: true, minLength: 8 })}
               placeholder="Password"
               className="p-2 rounded"
             />

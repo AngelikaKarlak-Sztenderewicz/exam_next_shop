@@ -24,6 +24,7 @@ export default function CheckoutClient() {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [existingAddress, setExistingAddress] = useState<Address | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<number | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
   const [newAddress, setNewAddress] = useState({
     street: '',
@@ -53,6 +54,7 @@ export default function CheckoutClient() {
         (data.addresses || [])[0] ||
         null;
       setExistingAddress(main);
+      setSelectedAddress(main ? main.id : null);
       setLoadingAddresses(false);
     };
     fetchAddresses();
@@ -79,47 +81,35 @@ export default function CheckoutClient() {
     0
   );
 
-  const total = productsTotal + shipping + transactionFee;
+  const total = Number((productsTotal + shipping + transactionFee).toFixed(2));
 
   const handlePayNow = async () => {
     if (addressMode === 'new' && !validateAddress()) return;
 
-    let addressId: number | null = null;
-
-    if (addressMode === 'existing') {
-      if (!existingAddress) {
-        alert('No existing address selected');
-        return;
-      }
-      addressId = existingAddress.id;
-    } else {
-      const resA = await fetch('/api/addresses', {
+    try {
+      const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newAddress),
+        body: JSON.stringify({
+          items,
+          addressId: selectedAddress,
+          paymentMethod,
+        }),
       });
-      if (!resA.ok) {
-        alert('Failed to save address');
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error('Order API error:', data);
+        alert('Order failed: ' + (data?.error ?? res.statusText));
         return;
       }
-      const dataA = await resA.json();
-      addressId = dataA.address.id;
+
+      window.location.href = `/orderSuccess`;
+    } catch (err) {
+      console.error('Network / unexpected error:', err);
+      alert('Network error — spróbuj ponownie.');
     }
-
-    const res = await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        items,
-        totalAmount: total,
-        addressId,
-        paymentMethod,
-      }),
-    });
-
-    if (!res.ok) return;
-    const data = await res.json();
-    window.location.href = `/order-success/${data.invoiceNumber}`;
   };
 
   return (

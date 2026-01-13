@@ -2,10 +2,10 @@ import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import AddToCartButton from '@/components/AddToCartButton';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { Breadcrumb } from '@/components/Breadcrumb';
+import AddToCartWithQuantity from '@/components/AddToCartWithQuantity';
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -80,12 +80,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <div className="w-1/3 flex flex-col gap-8 p-6 bg-customGray">
         <div>div z kolorem</div>
-        <div>div z wuantity +- i stock</div>
-        <div>subtotal i price</div>
-
-        <AddToCartButton
+        <AddToCartWithQuantity
           productId={product.id}
-          productName={product.name}
+          name={product.name}
           price={product.price}
           imageUrl={product.imageUrl}
           stock={product.stock}

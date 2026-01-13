@@ -11,7 +11,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 export default function Button({
   className = '',
   size = 'md',
-  type = 'button',
+  type = 'submit',
   ...props
 }: Props) {
   const sizeClasses: Record<ButtonSize, string> = {

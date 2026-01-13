@@ -3,76 +3,97 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 
+type IncomingItem = {
+  id: number;        // product id
+  quantity: number;
+  name?: string;     
+  image?: string | null;
+};
+
 function generateInvoiceNumber() {
   const now = new Date();
-  const date =
-    now.getFullYear().toString() +
-    String(now.getMonth() + 1).padStart(2, '0') +
-    String(now.getDate()).padStart(2, '0');
-
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
   const random = Math.floor(100000000 + Math.random() * 900000000);
-  return `INV/${date}/${random}`;
+  return `INV/${yyyy}${mm}${dd}/${random}`;
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user?.email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const body = await req.json();
-  const { items, totalAmount } = body;
-
-  if (!items || items.length === 0) {
-    return NextResponse.json({ error: 'No items' }, { status: 400 });
-  }
-
   try {
-    const invoiceNumber = generateInvoiceNumber();
-    const order = await prisma.order.create({
-      
-      data: {
-          invoiceNumber,
-        totalAmount,
-        status: 'PAID',
-        user: {
-          connect: {
-            email: session.user.email, 
-          },
-        },
-        items: {
-          create: items.map((item: {
-            id: number;
-            quantity: number;
-            price: number;
-          }) => ({
-            productId: item.id,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        },
-      },
-    });
-    for (const item of items) {
-      await prisma.product.update({
-        where: { id: item.id },
-        data: {
-          stock: {
-            decrement: item.quantity,
-          },
-        },
-      });
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    return NextResponse.json({
-      invoiceNumber: order.invoiceNumber,
+    const body = await req.json();
+    const { items, addressId, paymentMethod } = body;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'No items provided' }, { status: 400 });
+    }
+
+    const createdOrder = await prisma.$transaction(async (tx) => {
+      // 1) Sprawdź stock i pobierz produkt
+      const productsMap = new Map<number, { price: number; name: string; imageUrl: string | null; stock: number }>();
+
+      for (const item of items) {
+        const product = await tx.product.findUnique({
+          where: { id: item.id },
+          select: { id: true, price: true, name: true, imageUrl: true, stock: true },
+        });
+        if (!product) throw new Error(`Product not found: ${item.id}`);
+        if (product.stock < item.quantity) throw new Error(`Not enough stock for ${product.name}`);
+
+        productsMap.set(item.id, product);
+      }
+
+      // 2) Liczymy totalAmount z product.price
+      const totalAmount = items.reduce((sum, item) => {
+        const product = productsMap.get(item.id)!;
+        return sum + product.price * item.quantity;
+      }, 0);
+
+      // 3) Tworzymy zamówienie
+      const order = await tx.order.create({
+        data: {
+          invoiceNumber: generateInvoiceNumber(),
+          userId: Number(session.user.id),
+          addressId: addressId ?? undefined,
+          status: 'PAID',
+          totalAmount,
+        },
+      });
+
+      // 4) Tworzymy orderItems i zmniejszamy stock
+      for (const item of items) {
+        const product = productsMap.get(item.id)!;
+
+        await tx.orderItem.create({
+          data: {
+            orderId: order.id,
+            productId: item.id,
+            quantity: item.quantity,
+            priceAtPurchase: product.price * item.quantity,
+            productName: item.name ?? product.name,
+            productImageUrl: item.image ?? product.imageUrl ?? null,
+          },
+        });
+
+        await tx.product.update({
+          where: { id: item.id },
+          data: { stock: { decrement: item.quantity } },
+        });
+      }
+
+      return order;
     });
-  } catch (error) {
-    console.error('ORDER ERROR:', error);
-    return NextResponse.json(
-      { error: 'Order failed' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({
+      orderId: createdOrder.id,
+      invoiceNumber: createdOrder.invoiceNumber,
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message ?? 'Unknown error' }, { status: 400 });
   }
 }
