@@ -1,4 +1,4 @@
-export function UserIcon({ className = "w-6 h-6 text-iconColor" }) {
+export function UserIcon({ className = 'w-6 h-6' }) {
   return (
     <svg
       className={className}

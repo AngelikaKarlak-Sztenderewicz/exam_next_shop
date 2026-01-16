@@ -4,59 +4,55 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  console.log('GET /api/addresses session:', session);
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) return NextResponse.json({ addresses: [] });
 
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const userId = Number(session.user.id);
+    const addrs = await prisma.savedAddress.findMany({
+      where: { userId },
+    });
+    return NextResponse.json({ addresses: addrs });
+  } catch (err) {
+    console.error('GET /api/addresses error', err);
+    return NextResponse.json({ addresses: [] }, { status: 500 });
   }
-
-  const user = await prisma.user.findUnique({
-    where: { id: Number(session.user.id) },
-    include: { addresses: true },
-  });
-
-  if (!user) {
-    return NextResponse.json({ addresses: [] });
-  }
-
-  return NextResponse.json({ addresses: user.addresses || [] });
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  console.log('POST /api/addresses session:', session);
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+    const userId = Number(session.user.id);
+    const body = await req.json();
 
-  const body = await req.json();
-  const { street, city, zip, country, isMain } = body;
+    if (!body.street || !body.city || !body.zip || !body.country) {
+      return NextResponse.json({ error: 'Invalid address' }, { status: 400 });
+    }
 
-  if (!street || !city || !zip) {
-    return NextResponse.json({ error: 'Invalid address' }, { status: 400 });
-  }
-
-  const userId = Number(session.user.id);
-
-  if (isMain) {
-    await prisma.address.updateMany({
-      where: { userId, isMain: true },
-      data: { isMain: false },
+    const addr = await prisma.savedAddress.upsert({
+      where: { userId },
+      update: {
+        street: body.street,
+        city: body.city,
+        zip: body.zip,
+        country: body.country,
+        createdAt: new Date(),
+      },
+      create: {
+        userId,
+        street: body.street,
+        city: body.city,
+        zip: body.zip,
+        country: body.country,
+      },
     });
+
+    return NextResponse.json(addr);
+  } catch (err: unknown) {
+    console.error('Address create/update error:', err);
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const newAddress = await prisma.address.create({
-    data: {
-      userId,
-      street,
-      city,
-      zip,
-      country: country || 'Poland',
-      isMain: !!isMain,
-    },
-  });
-
-  return NextResponse.json({ address: newAddress });
 }

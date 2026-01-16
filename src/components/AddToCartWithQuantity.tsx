@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useCart } from "@/store/cartStore";
-import Button from "./Button";
+import { useState } from 'react';
+import { useCart } from '@/store/cartStore';
+import Button from './Button';
+import QuantitySelector from './QuantitySelector';
+import { CartIcon } from './icons/CartIcon';
 
 interface Props {
   productId: number;
@@ -10,42 +12,62 @@ interface Props {
   price: number;
   imageUrl: string;
   stock: number;
+  categoryName: string;
 }
 
-export default function AddToCartWithQuantity({ productId, name, price, imageUrl, stock }: Props) {
+export default function AddToCartWithQuantity({
+  productId,
+  name,
+  price,
+  imageUrl,
+  stock,
+  categoryName,
+}: Props) {
   const [quantity, setQuantity] = useState(1);
   const addToCart = useCart((s) => s.addToCart);
 
-  const subtotal = (Number(price) * quantity).toFixed(2);
-
-  const handleAdd = () => {
-    setQuantity((q) => Math.min(q + 1, stock));
-  };
-
-  const handleRemove = () => {
-    setQuantity((q) => Math.max(q - 1, 1));
-  };
-
   const handleAddToCart = () => {
-    addToCart({ id: productId, name, price, imageUrl, stock, quantity });
-    alert(`${quantity} x ${name} added to cart!`);
+    addToCart({
+      id: productId,
+      name,
+      price,
+      imageUrl,
+      stock,
+      quantity,
+      categoryName,
+    });
+    fetch('/api/notify/cart-add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `${quantity} x ${name} dodano do koszyka`,
+      }),
+    }).catch(() => {});
   };
 
   return (
-    <div className="mt-6 flex flex-col gap-4 bg-gray-800 p-4 rounded">
-      <div className="flex items-center gap-4">
-        <button onClick={handleRemove} className="px-2 py-1 bg-gray-700 rounded">-</button>
-        <span className="text-white w-8 text-center">{quantity}</span>
-        <button onClick={handleAdd} className="px-2 py-1 bg-gray-700 rounded">+</button>
-        <span className="text-gray-400">Stock: {stock}</span>
+    <div className="flex flex-col gap-5 w-full">
+      <span>Quantity</span>
+      <div className="flex gap-4 items-center">
+        <QuantitySelector
+          quantity={quantity}
+          stock={stock}
+          onIncrease={() => setQuantity((q) => Math.min(q + 1, stock))}
+          onDecrease={() => setQuantity((q) => Math.max(q - 1, 1))}
+        />
+        <span>Stock: {stock}</span>
       </div>
-      <div className="text-white">
-        Subtotal: ${subtotal}
+      <div className="flex justify-between py-2">
+        <span>Subtotal:</span>
+        <span className="text-2xl">{(price * quantity).toFixed(2)}$</span>
       </div>
       <Button
+        className="w-full bg-transparent border border-customOrange text-customOrange"
         onClick={handleAddToCart}
       >
-        Add to Cart
+        <span className=" items-center flex gap-2 justify-center">
+          Add to Cart <CartIcon />
+        </span>
       </Button>
     </div>
   );

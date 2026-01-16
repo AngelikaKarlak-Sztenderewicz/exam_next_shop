@@ -1,99 +1,95 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
- provider = "prisma-client-js"
-  output   = "../src/generated/prisma" 
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-    url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id                Int      @id @default(autoincrement())
-  firstName         String
-  email             String   @unique
-  phone             String   @unique
-  password          String
-  country           String
-  orders            Order[]
-  addresses         Address[]
+  id             Int           @id @default(autoincrement())
+  firstName      String
+  email          String        @unique
+  phone          String        @unique
+  password       String
+  country        String
+  orders         Order[]
+  savedAddresses SavedAddress?
 }
 
 model Category {
-  id                 Int       @id @default(autoincrement())
-  name               String    @unique
-  imageUrl           String?
-  products           Product[]
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  imageUrl String?
+  products Product[]
 }
 
 model Brand {
-  id                 Int       @id @default(autoincrement())
-  name               String    @unique
-  imageUrl           String?
-  products           Product[]
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  imageUrl String?
+  products Product[]
 }
 
 model Product {
-  id                    Int      @id @default(autoincrement())
-  name                  String   @unique
-  price                 Float
-  stock                 Int
-  imageUrl              String
-  description           String? 
-  categoryId            Int
-  category              Category @relation(fields: [categoryId], references: [id])
-   brandId              Int
-  brand                 Brand    @relation(fields: [brandId], references: [id])
-  orderItems            OrderItem[]
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  price       Float
+  stock       Int
+  imageUrl    String
+  description String?
+  categoryId  Int
+  brandId     Int
+  orderItems  OrderItem[]
+  brand       Brand       @relation(fields: [brandId], references: [id])
+  category    Category    @relation(fields: [categoryId], references: [id])
 }
 
 model Order {
-  id                   Int         @id @default(autoincrement())
-  invoiceNumber        String      @unique
-  userId               Int
-  addressId            Int
-  status               String
-  totalAmount          Float
-  createdAt            DateTime    @default(now())
-  user                 User        @relation(fields: [userId], references: [id])
-  address              Address? @relation(fields: [addressId], references: [id]) 
-  items                OrderItem[]
+  id            Int         @id @default(autoincrement())
+  invoiceNumber String      @unique
+  userId        Int
+  status        OrderStatus
+  totalAmount   Float
+  paymentMethod String
+  createdAt     DateTime    @default(now())
+  street        String
+  city          String
+  zip           String
+  country       String
+  user          User        @relation(fields: [userId], references: [id])
+  items         OrderItem[]
 }
 
 model OrderItem {
-  id                   Int     @id @default(autoincrement())
-  orderId              Int
-  productId            Int
-  quantity             Int
-  priceAtPurchase      Float
-  productName          String
-  productImageUrl      String
-  order                Order   @relation(fields: [orderId], references: [id])
-  product              Product @relation(fields: [productId], references: [id])
+  id                  Int     @id @default(autoincrement())
+  orderId             Int
+  productId           Int
+  quantity            Int
+  priceAtPurchase     Float
+  hasProtection       Boolean @default(false)
+  productName         String
+  productImageUrl     String
+  productCategoryName String
+  order               Order   @relation(fields: [orderId], references: [id])
+  product             Product @relation(fields: [productId], references: [id])
 }
 
-model Address {
-  id                 Int      @id @default(autoincrement())
-  userId             Int
-  street             String
-  city               String
-  zip                String
-  country            String
-  isMain             Boolean  @default(false)
-  createdAt          DateTime @default(now())
-
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders             Order[]  
+model SavedAddress {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  street    String
+  city      String
+  zip       String
+  country   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum OrderStatus {
   PENDING
   PAID
   CANCELLED
-} 
+}

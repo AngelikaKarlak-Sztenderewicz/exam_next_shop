@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/Button';
+import { notify } from '@/lib/sse';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 const PHONE_REGEX = /^\+\d{1,3}\d{10}$/;
@@ -25,6 +26,7 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     watch,
+    setError,
     formState: { errors },
   } = useForm<RegisterForm>();
 
@@ -35,9 +37,35 @@ export default function RegisterPage() {
       body: JSON.stringify(data),
     });
 
-    if (res.ok) {
-      router.push('/register/success');
+    const body = await res.json();
+
+    if (!res.ok) {
+      if (body.error === 'EMAIL_EXISTS') {
+        setError('email', {
+          message: 'Email already in use',
+        });
+
+        notify({
+          type: 'error',
+          message: 'Email already in use',
+        });
+      }
+
+      if (body.error === 'PHONE_EXISTS') {
+        setError('phone', {
+          message: 'Phone number already in use',
+        });
+
+        notify({
+          type: 'error',
+          message: 'Phone number already in use',
+        });
+      }
+
+      return;
     }
+
+    router.push('/register/success');
   };
 
   return (

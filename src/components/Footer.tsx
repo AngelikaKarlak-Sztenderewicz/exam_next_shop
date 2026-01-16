@@ -1,3 +1,9 @@
+import { ApplePayIcon } from './icons/ApplePayIcon';
+import { GPayIcon } from './icons/GPayIcon';
+import { MastercardIcon } from './icons/MastercardIcon';
+import { PayPallIcon } from './icons/PayPalIcon';
+import { VisaIcon } from './icons/Visa';
+
 export default function Footer() {
   return (
     <footer className="bg-customGray text-gray-300">
@@ -17,21 +23,25 @@ export default function Footer() {
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <span className="bg-white rounded-md px-3 py-2 text-xs font-semibold shadow-sm inline-flex items-center">
-                VISA
-              </span>
-              <span className="bg-white rounded-md px-3 py-2 text-xs font-semibold shadow-sm inline-flex items-center">
-                Mastercard
-              </span>
-              <span className="bg-white rounded-md px-3 py-2 text-xs font-semibold shadow-sm inline-flex items-center">
-                PayPal
-              </span>
-              <span className="bg-white rounded-md px-3 py-2 text-xs font-semibold shadow-sm inline-flex items-center">
-                Pay
-              </span>
-              <span className="bg-white rounded-md px-3 py-2 text-xs font-semibold shadow-sm inline-flex items-center">
-                GPay
-              </span>
+              <div className="rounded bg-white p-2 flex items-center justify-center shadow">
+                <VisaIcon />
+              </div>
+
+              <div className="rounded bg-white p-2 flex items-center justify-center shadow">
+                <MastercardIcon />
+              </div>
+
+              <div className="rounded bg-white p-2 flex items-center justify-center shadow">
+                <PayPallIcon />
+              </div>
+
+              <div className="rounded bg-white p-2 flex items-center justify-center shadow">
+                <ApplePayIcon />
+              </div>
+
+              <div className="rounded bg-white p-2 flex items-center justify-center shadow">
+                <GPayIcon />
+              </div>
             </div>
           </div>
 

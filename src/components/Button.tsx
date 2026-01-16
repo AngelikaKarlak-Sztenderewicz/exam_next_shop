@@ -25,7 +25,7 @@ export default function Button({
     <button
       type={type}
       {...props}
-      className={` w-full rounded-md transition text-bold bg-submitButtonColor hover:opacity-90 ${sizeClasses[size]} ${className}`}
+      className={` w-full rounded-md transition text-bold bg-customOrange hover:opacity-90 ${sizeClasses[size]} ${className}`}
     />
   );
 }

@@ -1,13 +1,12 @@
 {
   /*strona dynamiczna, renderuje produkty dla danej kategorii.*/
 }
-import { prisma } from "@/lib/prisma";
-import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Breadcrumb } from "@/components/Breadcrumb";
+import { prisma } from '@/lib/prisma';
+import { notFound, redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { Breadcrumb } from '@/components/Breadcrumb';
+import ProductCard from '@/components/ProductCard';
 
 interface Props {
   params: { name: string };
@@ -16,7 +15,7 @@ interface Props {
 export default async function CategoryPage({ params }: Props) {
   const session = await getServerSession(authOptions);
 
-  if (!session) redirect("/login");
+  if (!session) redirect('/login');
 
   const { name } = await params;
 
@@ -39,7 +38,7 @@ export default async function CategoryPage({ params }: Props) {
     <div className="p-6">
       <Breadcrumb
         items={[
-          { label: "Products", href: "/products" },
+          { label: 'Products', href: '/products' },
           {
             label: category.name,
           },
@@ -54,24 +53,16 @@ export default async function CategoryPage({ params }: Props) {
           <div className="text-white">No products in this category</div>
         ) : (
           category.products.map((p) => (
-            <Link key={p.id} href={`/products/${p.id}`}>
-              <div className="flex flex-col items-center bg-customGray rounded p-4 cursor-pointer hover:scale-105 transition-transform">
-                <div className="w-[268px] h-[204px] bg-white flex items-center justify-center mb-2 rounded-[6px]">
-                  <Image
-                    src={p.imageUrl}
-                    alt={p.name}
-                    width={268}
-                    height={204}
-                    className="object-contain rounded-[6px] max-h-[204px] max-w-[268px]"
-                  />
-                </div>
-                <h3 className="font-bold text-center mt-2 text-white">
-                  {p.name}
-                </h3>
-                <p className="font-semibold text-white">{p.price} $</p>
-                <p className="text-gray-300">{p.brand?.name}</p>
-              </div>
-            </Link>
+            <ProductCard
+              key={p.id}
+              id={p.id}
+              name={p.name}
+              price={p.price}
+              imageUrl={p.imageUrl}
+              stock={p.stock}
+              categoryName={p.category.name}
+              className="flex-shrink-0 items-center"
+            />
           ))
         )}
       </div>

@@ -1,13 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Product } from '@/lib/api/products';
-import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 
 type Category = { id: number; name: string };
+
+export type Product = {
+  id: number;
+  name: string;
+  price: number;
+  imageUrl: string;
+  stock: number;
+  categoryName: string;
+};
 
 interface ProductsPageClientProps {
   categories: Category[];
@@ -25,7 +31,7 @@ export default function ProductsPageClient({
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [sortOption] = useState('nameAsc');
+  const [sortOption, setSortOption] = useState('newest');
   const [showCount, setShowCount] = useState(9);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -33,7 +39,7 @@ export default function ProductsPageClient({
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
     setPage(1);
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() ?? '');
     if (category === 'All') {
       params.delete('category');
     } else {
@@ -45,7 +51,7 @@ export default function ProductsPageClient({
   useEffect(() => {
     const fetchProducts = async () => {
       const queryParams = new URLSearchParams();
-      if (selectedCategory !== 'All')
+      if (selectedCategory && selectedCategory !== 'All')
         queryParams.append('category', selectedCategory);
       if (minPrice) queryParams.append('minPrice', minPrice);
       if (maxPrice) queryParams.append('maxPrice', maxPrice);
@@ -56,98 +62,138 @@ export default function ProductsPageClient({
       const res = await fetch(`/api/products?${queryParams.toString()}`);
       const data = await res.json();
 
-      setProducts(data.products);
-      setTotal(data.total);
+      const mapped: Product[] = (data.products || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        imageUrl: p.imageUrl,
+        stock: p.stock,
+        categoryName: p.categoryName ?? p.category?.name ?? 'Brak kategorii',
+      }));
+
+      console.log('Fetched products sample:', mapped.slice(0, 3));
+      setProducts(mapped);
+      setTotal(data.total ?? 0);
     };
+
     fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, minPrice, maxPrice, sortOption, showCount, page]);
 
   return (
-    <div className="p-6 flex gap-6">
+    <div className="flex">
       {/* LEWA CZĘŚĆ – FILTRY */}
-      <div className="w-1/4 flex flex-col gap-6">
+      <div className="w-1/4 flex flex-col gap-6 p-10">
         <div>
-          <h2 className="font-bold mb-2 text-white">Kategorie</h2>
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={() => handleCategoryClick('All')}
-              className={`p-2 rounded ${
-                selectedCategory === 'All'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-white'
-              }`}
-            >
-              All
-            </button>
+          <h2 className="font-bold mb-4 text-2xl">Category</h2>
+
+          <div className="flex flex-col gap-3">
+            {/* ALL */}
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedCategory === 'All'}
+                onChange={() => handleCategoryClick('All')}
+                className="w-4 h-4 rounded accent-customOrange"
+              />
+              <span>All</span>
+            </label>
+
             {categories.map((c) => (
-              <button
+              <label
                 key={c.id}
-                onClick={() => handleCategoryClick(c.name)}
-                className={`p-2 rounded ${
-                  selectedCategory === c.name
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-white'
-                }`}
+                className="flex items-center gap-3 cursor-pointer"
               >
-                {c.name}
-              </button>
+                <input
+                  type="checkbox"
+                  checked={selectedCategory === c.name}
+                  onChange={() => handleCategoryClick(c.name)}
+                  className="w-4 h-4 accent-customOrange"
+                />
+                <span>{c.name}</span>
+              </label>
             ))}
           </div>
         </div>
 
         {/* Cena (FILTRY) */}
-        <div>
-          <h2 className="font-bold mb-2 text-white">Cena</h2>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              step={1}
-              min={0}
-              placeholder="Min"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="w-1/2 p-2 rounded bg-gray-700 text-white"
-            />
-            <input
-              type="number"
-              step={1}
-              min={minPrice ? Number(minPrice) + 1 : 1}
-              placeholder="Max"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="w-1/2 p-2 rounded bg-gray-700 text-white"
-            />
+        <div className="w-80">
+          <h2 className="font-bold mb-2 text-2xl">Price</h2>
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2 items-center">
+              <input
+                type="number"
+                step={1}
+                min={0}
+                placeholder="Min"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="w-1/2 p-2 rounded"
+              />
+              <span className="text-2xl">$</span>
+            </div>
+
+            <div className=" flex gap-2 items-center">
+              <input
+                type="number"
+                step={1}
+                min={minPrice ? Number(minPrice) + 1 : 1}
+                placeholder="Max"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="w-1/2 p-2 rounded"
+              />
+              <span className="text-2xl">$</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* PRAWA CZĘŚĆ – PRODUKTY */}
-      <div>
-        <div>
-          <h2 className="font-bold mb-2 text-white">Products per page</h2>
-          <select
-            value={showCount}
-            onChange={(e) => {
-              setPage(1);
-              setShowCount(Number(e.target.value));
-            }}
-            className="w-full p-2 rounded bg-gray-700 text-white"
-          >
-            {[9, 12, 18].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
+      <div className="max-w-7xl mx-auto flex flex-col gap-14 p-10">
+        <div className="flex gap-14">
+          <div className="flex items-center gap-4">
+            <span className="font-bold">Sort by</span>
+            <select
+              value={sortOption}
+              onChange={(e) => {
+                setPage(1);
+                setSortOption(e.target.value);
+              }}
+              className="p-2 rounded"
+            >
+              <option value="newest">Latest</option>
+              <option value="priceAsc">Price: ascending </option>
+              <option value="priceDesc">Price: descending</option>
+            </select>
+          </div>
+          <div className="flex items-center  gap-4">
+            <span className="font-bold">Show</span>
+            <select
+              value={showCount}
+              onChange={(e) => {
+                setPage(1);
+                setShowCount(Number(e.target.value));
+              }}
+              className="p-2 rounded"
+            >
+              {[9, 12, 18].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="w-3/4 flex flex-col gap-6">
+
+        <div className="flex flex-col gap-6">
           {products.length === 0 ? (
-            <div className="text-white font-bold text-xl text-center mt-10">
+            <div className=" font-bold text-xl text-center mt-10">
               No products found
             </div>
           ) : (
             <>
-              <div className="flex flex-wrap gap-4 justify-start">
+              <div className="flex flex-wrap gap-4">
                 {products.map((p) => (
                   <ProductCard
                     key={p.id}
@@ -156,6 +202,7 @@ export default function ProductsPageClient({
                     price={p.price}
                     imageUrl={p.imageUrl}
                     stock={p.stock}
+                    categoryName={p.categoryName}
                   />
                 ))}
               </div>
@@ -170,9 +217,7 @@ export default function ProductsPageClient({
                     key={num}
                     onClick={() => setPage(num)}
                     className={`px-3 py-1 rounded ${
-                      page === num
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-700 text-white'
+                      page === num ? 'bg-customOrange' : ''
                     }`}
                   >
                     {num}

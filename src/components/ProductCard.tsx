@@ -1,3 +1,4 @@
+// src/components/ProductCard.tsx
 'use client';
 
 import Link from 'next/link';
@@ -11,6 +12,7 @@ export type ProductCardProps = {
   price: number;
   imageUrl: string;
   stock: number;
+  categoryName: string;
   className?: string;
 };
 
@@ -20,6 +22,7 @@ export default function ProductCard({
   price,
   imageUrl,
   stock,
+  categoryName,
   className = '',
 }: ProductCardProps) {
   const addToCart = useCart((state) => state.addToCart);
@@ -28,12 +31,14 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
 
-    addToCart({ id, name, price, imageUrl, stock, quantity: 1 });
+    console.log('ProductCard: addToCart', { id, name, categoryName });
+
+    addToCart({ id, name, price, imageUrl, stock, quantity: 1, categoryName });
   };
 
   return (
     <Link href={`/products/${id}`} className="group">
-      <div className="relative flex flex-col items-center bg-customGray rounded p-4">
+      <div className="relative flex flex-col bg-customGray rounded p-4">
         <button
           onClick={handleAddToCart}
           aria-label="Add to cart"
@@ -54,8 +59,13 @@ export default function ProductCard({
           />
         </div>
 
-        <h3 className="font-bold text-center mt-2">{name}</h3>
-        <p className="font-semibold">{price} $</p>
+        <div>
+          <span className="text-sm inline-flex w-fit rounded-md bg-customOrange py-1.5 px-2.5">
+            {categoryName}
+          </span>
+          <h3 className="font-bold  mt-2">{name}</h3>
+          <p className="font-semibold text-3xl mt-1">{price} $</p>
+        </div>
       </div>
     </Link>
   );

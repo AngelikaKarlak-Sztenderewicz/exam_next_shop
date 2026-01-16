@@ -1,12 +1,12 @@
-
-import "./globals.css";
-import Providers from "@/components/Providers";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import './globals.css';
+import Providers from '@/components/Providers';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Toast from '@/components/Toast';
 
 export const metadata = {
-  title: "DevstockHub",
-  description: "Sklep internetowy",
+  title: 'DevstockHub',
+  description: 'Sklep internetowy',
 };
 
 export default function RootLayout({
@@ -19,6 +19,7 @@ export default function RootLayout({
       <body className="flex flex-col min-h-screen ">
         <Providers>
           <Header />
+          <Toast />
           <main className="flex-1 p-4">{children}</main>
           <Footer />
         </Providers>

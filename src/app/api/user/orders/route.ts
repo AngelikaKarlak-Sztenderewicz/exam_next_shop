@@ -5,16 +5,24 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const orders = await prisma.order.findMany({
     where: { userId: Number(session.user.id) },
-    include: { items: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      invoiceNumber: true,   
+      createdAt: true,
+      totalAmount: true,
+      items: {
+        select: {
+          productName: true, 
+        },
+      },
+    },
   });
-
   return NextResponse.json(orders);
 }

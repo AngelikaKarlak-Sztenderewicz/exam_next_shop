@@ -1,4 +1,4 @@
-export function BinIcon({ className = 'w-6 h-6' }) {
+export function BinIcon({ className = '' }) {
   return (
     <svg
       width="22"

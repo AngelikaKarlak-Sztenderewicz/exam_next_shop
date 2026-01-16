@@ -6,7 +6,8 @@ module.exports = {
       colors: {
         customGray: "#262626",
         iconColor: "#FCFCFC",
-        submitButtonColor: "#F29145",
+        customOrange: "#F29145",
+        successGreen: "#295B40"
       },
     },
   },
