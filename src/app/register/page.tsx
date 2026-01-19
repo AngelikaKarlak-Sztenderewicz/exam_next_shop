@@ -2,8 +2,9 @@
 
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import Button from '@/components/Button';
 import { notify } from '@/lib/sse';
+import { COUNTRY_LABELS } from '@/lib/countries';
+import { Button } from '@/components/ui';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 const PHONE_REGEX = /^\+\d{1,3}\d{10}$/;
@@ -71,10 +72,9 @@ export default function RegisterPage() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="max-w-md mx-auto mt-20 p-6 bg-customGray rounded flex flex-col gap-4"
+      className="max-w-md mx-auto my-10 p-6 bg-customGray rounded flex flex-col gap-4"
     >
       <h2 className="text-2xl font-bold ">Create account</h2>
-      {/* First Name */}
       <div className="flex flex-col gap-1">
         <label htmlFor="firstName">Name</label>
         <input
@@ -86,7 +86,6 @@ export default function RegisterPage() {
           <p className="text-red-500 text-sm">{errors.firstName.message}</p>
         )}
       </div>
-      {/* Email */}
       <div className="flex flex-col gap-1">
         <label htmlFor="email">Email</label>
         <input
@@ -104,7 +103,6 @@ export default function RegisterPage() {
           <p className="text-red-500 text-sm">{errors.email.message}</p>
         )}
       </div>
-      {/* Phone */}
       <div className="flex flex-col gap-1">
         <label htmlFor="phone">Phone number</label>
         <input
@@ -122,7 +120,6 @@ export default function RegisterPage() {
           <p className="text-red-500 text-sm">{errors.phone.message}</p>
         )}
       </div>
-      {/* Password */}
       <div className="flex flex-col gap-1">
         <label htmlFor="password">Password</label>
         <input
@@ -143,7 +140,6 @@ export default function RegisterPage() {
           <p className="text-red-500 text-sm">{errors.password.message}</p>
         )}
       </div>
-      {/* Confirm Password */}
       <div className="flex flex-col gap-1">
         <label htmlFor="confirmPassword">Confirm password</label>
         <input
@@ -161,8 +157,6 @@ export default function RegisterPage() {
           </p>
         )}
       </div>
-
-      {/* Country */}
       <div className="flex flex-col gap-1">
         <label htmlFor="country">Country / Region</label>
         <select
@@ -170,10 +164,11 @@ export default function RegisterPage() {
           {...register('country', { required: 'Country required' })}
         >
           <option value="">Select country</option>
-          <option value="PL">Poland</option>
-          <option value="DE">Germany</option>
-          <option value="UK">United Kingdom</option>
-          <option value="US">United States</option>
+          {Object.entries(COUNTRY_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
         {errors.country && (
           <p className="text-red-500 text-sm">{errors.country.message}</p>

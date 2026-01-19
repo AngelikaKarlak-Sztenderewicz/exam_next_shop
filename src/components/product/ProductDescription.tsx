@@ -6,7 +6,7 @@ type Props = {
   description: string;
 };
 
-export default function ProductDescription({ description }: Props) {
+export function ProductDescription({ description }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (

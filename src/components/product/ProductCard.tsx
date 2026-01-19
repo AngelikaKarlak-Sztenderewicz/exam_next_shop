@@ -1,10 +1,9 @@
-// src/components/ProductCard.tsx
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/store/cartStore';
-import { CartIcon } from './icons/CartIcon';
+import { CartIcon } from '../icons';
 
 export type ProductCardProps = {
   id: number;
@@ -16,7 +15,7 @@ export type ProductCardProps = {
   className?: string;
 };
 
-export default function ProductCard({
+export function ProductCard({
   id,
   name,
   price,
@@ -38,7 +37,7 @@ export default function ProductCard({
 
   return (
     <Link href={`/products/${id}`} className="group">
-      <div className="relative flex flex-col bg-customGray rounded p-4">
+      <div className="relative flex flex-col bg-customGray rounded p-4 w-[300]">
         <button
           onClick={handleAddToCart}
           aria-label="Add to cart"
@@ -48,22 +47,22 @@ export default function ProductCard({
         </button>
 
         <div
-          className={`w-[268px] h-[204px] bg-white flex items-center justify-center mb-2 rounded-[6px] ${className}`}
+          className={`w-[268px] h-[204px] bg-white flex items-center justify-center mb-2 rounded-[6px] relative ${className}`}
         >
           <Image
             src={imageUrl}
             alt={name}
             width={268}
             height={204}
-            className="object-contain rounded-[6px] max-h-[204px] max-w-[268px]"
+            className="object-contain rounded-md max-h-[204px] max-w-[268px]"
           />
         </div>
 
         <div>
-          <span className="text-sm inline-flex w-fit rounded-md bg-customOrange py-1.5 px-2.5">
+          <span className="text-sm inline-flex w-fit rounded-md bg-customOrange py-1.5 px-2.5 ">
             {categoryName}
           </span>
-          <h3 className="font-bold  mt-2">{name}</h3>
+          <h3 className="font-bold mt-2 truncate">{name}</h3>
           <p className="font-semibold text-3xl mt-1">{price} $</p>
         </div>
       </div>

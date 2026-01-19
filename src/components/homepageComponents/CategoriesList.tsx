@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import type { Category } from '@/generated/prisma';
-import { MouseIcon } from '@/components/icons/MouseIcon';
-import { KeyboardIcon } from '@/components/icons/KeyboardIcon';
-import { HeadphonesIcon } from '@/components/icons/HeadphonesIcon';
-import { MonitorIcon } from '@/components/icons/MonitorIcon';
-import { WebcamIcon } from '@/components/icons/WebcamIcon';
+import {
+  HeadphonesIcon,
+  KeyboardIcon,
+  MonitorIcon,
+  MouseIcon,
+  WebcamIcon,
+} from '../icons';
 
 const categoryIcons: Record<string, React.FC<{ className?: string }>> = {
   mouse: MouseIcon,
@@ -20,13 +22,14 @@ type Props = {
   categories: Category[];
 };
 
-export default function CategoriesList({ categories }: Props) {
+export function CategoriesList({ categories }: Props) {
   return (
     <section className="flex flex-col items-center justify-center p-8 w-full">
       <h2 className="text-3xl font-bold mb-6">Category</h2>
-      <div className="flex gap-4 px-4 justify-center overflow-hidden">
+      <div className="flex flex-wrap gap-4 px-4 justify-center">
         {categories.map((c: Category) => {
           const Icon = categoryIcons[c.name] ?? (() => null);
+
           return (
             <Link
               key={c.id}

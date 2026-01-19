@@ -1,4 +1,4 @@
-export function VisaIcon({ className = 'w-8 h-6' }) {
+export function VisaIcon() {
   return (
     <svg
       width="33"

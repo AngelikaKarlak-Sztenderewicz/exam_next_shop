@@ -1,7 +1,6 @@
 'use client';
 
-import { Plus } from './icons/Plus';
-import { Minus } from './icons/Minus';
+import { MinusIcon, PlusIcon } from '../icons';
 
 interface Props {
   quantity: number;
@@ -10,20 +9,20 @@ interface Props {
   onDecrease: () => void;
 }
 
-export default function QuantitySelector({
+export function QuantitySelector({
   quantity,
   stock,
   onIncrease,
   onDecrease,
 }: Props) {
   return (
-    <div className="flex items-center gap-2 border rounded py-1">
+    <div className="flex items-center gap-2 border rounded py-2">
       <button
         onClick={onDecrease}
         disabled={quantity <= 1}
         className="px-3 py-1 disabled:opacity-40"
       >
-        <Minus />
+        <MinusIcon />
       </button>
 
       <span className="w-6 text-center">{quantity}</span>
@@ -33,7 +32,7 @@ export default function QuantitySelector({
         disabled={quantity >= stock}
         className="px-3 py-1 disabled:opacity-40"
       >
-        <Plus />
+        <PlusIcon />
       </button>
     </div>
   );

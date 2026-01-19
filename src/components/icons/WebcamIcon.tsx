@@ -1,8 +1,4 @@
-type IconProps = {
-  className?: string;
-};
-
-export function WebcamIcon({ className }: IconProps) {
+export function WebcamIcon() {
   return (
     <svg
       width="80"

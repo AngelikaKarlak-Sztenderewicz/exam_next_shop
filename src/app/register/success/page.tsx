@@ -1,4 +1,4 @@
-import { ThankYouIcon } from '@/components/icons/ThankYouIcon';
+import { ThankYouIcon } from '@/components/icons';
 
 export default function SuccessPage() {
   return (
@@ -12,10 +12,10 @@ export default function SuccessPage() {
         Please check your e-mail for further information. Let’s explore our
         products and enjoy many gifts.
       </p>
-      <p className="mt-6 text-sm text-gray-400">
+      <span className="mt-6 text-sm text-gray-400">
         Having problem?
         <p className="text-customOrange">Contact us</p>
-      </p>
+      </span>
     </div>
   );
 }

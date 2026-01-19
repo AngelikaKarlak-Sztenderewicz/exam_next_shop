@@ -1,8 +1,8 @@
 'use client';
 
-import { useSSE } from '@/components/SSEProvider';
+import { useSSE } from '@/components/providers/SSEProvider';
 
-export default function GlobalSSE() {
+export function GlobalSSE() {
   const { event } = useSSE();
   if (!event) return null;
 
@@ -10,7 +10,7 @@ export default function GlobalSSE() {
 
   return (
     <div
-      className={`${bg} fixed top-4 left-1/2 -translate-x-1/2 z-50 text-white px-4 py-2 rounded shadow`}
+      className={`${bg} fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded shadow`}
     >
       {event.message}
     </div>

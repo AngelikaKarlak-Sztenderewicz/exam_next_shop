@@ -1,8 +1,4 @@
-type IconProps = {
-  className?: string;
-};
-
-export function KeyboardIcon({ className }: IconProps) {
+export function KeyboardIcon() {
   return (
     <svg
       width="80"

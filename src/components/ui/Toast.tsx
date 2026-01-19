@@ -2,10 +2,9 @@
 
 import { useEffect } from 'react';
 import { useUIStore } from '@/store/uiStore';
-import { ThankYouIcon } from './icons/ThankYouIcon';
-import { ErrorIcon } from './icons/ErrorIcon';
+import { ErrorIcon, ThankYouIcon } from '../icons';
 
-export default function Toast() {
+export function Toast() {
   const { toast, hideToast } = useUIStore();
 
   useEffect(() => {

@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { useCart } from '@/store/cartStore';
-import Button from './Button';
-import QuantitySelector from './QuantitySelector';
-import { CartIcon } from './icons/CartIcon';
+import { CartIcon } from '../icons';
+import { Button, QuantitySelector } from '../ui';
 
 interface Props {
   productId: number;
@@ -15,7 +14,7 @@ interface Props {
   categoryName: string;
 }
 
-export default function AddToCartWithQuantity({
+export function AddToCartWithQuantity({
   productId,
   name,
   price,
@@ -27,6 +26,8 @@ export default function AddToCartWithQuantity({
   const addToCart = useCart((s) => s.addToCart);
 
   const handleAddToCart = () => {
+    if (stock <= 0) return;
+
     addToCart({
       id: productId,
       name,
@@ -57,12 +58,13 @@ export default function AddToCartWithQuantity({
         />
         <span>Stock: {stock}</span>
       </div>
-      <div className="flex justify-between py-2">
+      <div className="flex justify-between items-center py-2">
         <span>Subtotal:</span>
         <span className="text-2xl">{(price * quantity).toFixed(2)}$</span>
       </div>
       <Button
         className="w-full bg-transparent border border-customOrange text-customOrange"
+        disabled={stock === 0}
         onClick={handleAddToCart}
       >
         <span className=" items-center flex gap-2 justify-center">

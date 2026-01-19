@@ -1,11 +1,20 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import Button from '@/components/Button';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { ThankYouIcon } from '@/components/icons/ThankYouIcon';
+import { ThankYouIcon } from '@/components/icons';
+import { OrderItemDisplay } from '@/components/cart';
+import { Button } from '@/components/ui';
+
+type OrderItemView = {
+  id: number;
+  productName: string;
+  productImageUrl: string;
+  productCategoryName: string;
+  priceAtPurchase: number;
+  quantity: number;
+};
 
 async function getLastOrder(userId: number) {
   return prisma.order.findFirst({
@@ -19,6 +28,7 @@ async function getLastOrder(userId: number) {
 
 export default async function OrderSuccessPage() {
   const session = await getServerSession(authOptions);
+
   if (!session) redirect('/login');
 
   const order = await getLastOrder(session.user.id);
@@ -41,7 +51,7 @@ export default async function OrderSuccessPage() {
     productsTotal + shipping + productProtection + transactionFee;
 
   return (
-    <div className="mx-auto p-6 flex flex-col gap-6 bg-customGray w-full min-w-[360px] max-w-[640px]">
+    <div className="mx-auto my-6 p-6 flex flex-col gap-6 rounded bg-customGray w-full min-w-[312px] max-w-[640px]">
       <div className="flex flex-col items-center gap-2">
         <ThankYouIcon className="w-16 h-16" />
         <h1 className="text-2xl font-semibold">Thanks for Your Order!</h1>
@@ -65,27 +75,8 @@ export default async function OrderSuccessPage() {
 
       <div className="flex flex-col gap-4">
         <h2 className="font-semibold">Your Order</h2>
-        {order.items.map((item: any) => (
-          <div key={item.id} className="flex gap-4 p-4">
-            <div className="w-[170px] h-[130px] relative overflow-hidden rounded-md bg-white">
-              <Image
-                src={item.productImageUrl}
-                alt={item.productName}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="flex flex-col gap-1 p-4">
-              <span className="font-medium">{item.productName}</span>
-              <span className="font-medium inline-flex w-fit rounded-md bg-customOrange py-2 px-5">
-                {item.productCategoryName}
-              </span>
-              <div className="text-2xl flex justify-between gap-4">
-                <span>${item.priceAtPurchase.toFixed(2)}</span>
-                <span>x{item.quantity}</span>
-              </div>
-            </div>
-          </div>
+        {order.items.map((item: OrderItemView) => (
+          <OrderItemDisplay key={item.id} item={item} />
         ))}
       </div>
 
@@ -120,7 +111,7 @@ export default async function OrderSuccessPage() {
       </div>
 
       <Link href="/products">
-        <Button className="w-full bold text-customGray">
+        <Button className="w-full font-semibold text-customGray">
           Continue Shopping
         </Button>
       </Link>

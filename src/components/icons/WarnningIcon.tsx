@@ -1,4 +1,4 @@
-export function WarnningIcon({ className = '' }) {
+export function WarnningIcon() {
   return (
     <svg
       width="65"

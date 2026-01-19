@@ -8,7 +8,7 @@ type Props = {
   brands: Brand[];
 };
 
-export default function BrandsList({ brands }: Props) {
+export function BrandsList({ brands }: Props) {
   return (
     <section className="flex flex-col items-center justify-center p-8 w-full">
       <h2 className="text-3xl font-bold mb-6">Brands</h2>

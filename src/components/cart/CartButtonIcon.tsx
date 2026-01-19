@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-export default function CartButtonIcon({
+export function CartButtonIcon({
   onClick,
-  ariaLabel = "Dodaj do koszyka",
+  ariaLabel = 'Dodaj do koszyka',
 }: {
   onClick?: () => void;
   ariaLabel?: string;

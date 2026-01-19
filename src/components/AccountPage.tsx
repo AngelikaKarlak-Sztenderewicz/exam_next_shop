@@ -5,6 +5,8 @@ import { useSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { TransactionCartIcon } from './icons/TransactionCartIcon';
+import { useCart } from '@/store/cartStore';
+import { Breadcrumb } from './ui';
 
 type Order = {
   id: number;
@@ -13,6 +15,7 @@ type Order = {
   totalAmount: number;
   items: { productName: string }[];
 };
+
 export default function AccountPage() {
   const { data: session } = useSession();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -21,25 +24,21 @@ export default function AccountPage() {
     fetch('/api/user/orders')
       .then((res) => res.json())
       .then((data) => {
-        console.log('API orders:', data);
         setOrders(Array.isArray(data) ? data : (data.orders ?? []));
       });
   }, []);
 
   const user = session?.user;
+  const clearCart = useCart((s) => s.clearCart);
 
   return (
     <div className="p-6 flex flex-col gap-6">
-      <div className="text-gray-400 text-sm">
-        <Link href="/" className="hover:underline">
-          Home
-        </Link>{' '}
-        &gt; <span>Profile</span>
-      </div>
-
-      <div className="flex gap-6">
-        <div className="w-72">
-          <div className="p-4 bg-customGray rounded-md flex flex-col items-center gap-2 ">
+      <Breadcrumb
+        items={[{ label: 'Home', href: '/' }, { label: 'Profile' }]}
+      />
+      <div className="flex flex-col sm:flex-row gap-6">
+        <div className="w-full sm:w-1/4">
+          <div className="p-4 bg-customGray rounded-md flex flex-col items-center gap-4">
             <div className="w-[72px] h-[72px] rounded-full overflow-hidden relative">
               <Image
                 src="https://i.ibb.co/YF1VhVMn/avatar.png"
@@ -48,19 +47,25 @@ export default function AccountPage() {
                 className="object-cover"
               />
             </div>
+
             <h2 className="text-xl font-bold text-center">{user?.name}</h2>
-            <p>{user?.email}</p>
+            <p className="text-center">{user?.email}</p>
+
             <button
-              onClick={() => signOut({ callbackUrl: '/' })}
+              onClick={() => {
+                clearCart();
+                signOut({ callbackUrl: '/' });
+              }}
               className="mt-2 bg-customOrange p-2 rounded w-full"
             >
               Logout
             </button>
           </div>
         </div>
-
-        <div className="flex-1 bg-customGray rounded-md p-4">
-          <h3 className="text-lg font-bold text-white mb-2">Orders</h3>
+        <div className="w-full sm:flex-1 rounded-md p-4 bg-customGray">
+          <h3 className="text-customOrange text-2xl border-b-2 border-customOrange w-1/2 p-2 mb-4 text-center">
+            Transactions
+          </h3>
 
           {orders.length === 0 ? (
             <p className="text-gray-400">You have no orders yet.</p>
@@ -69,7 +74,7 @@ export default function AccountPage() {
               {orders.map((order) => (
                 <li
                   key={order.id}
-                  className="flex items-start gap-4 p-4 rounded-md"
+                  className="flex items-start gap-4 p-4 rounded-md bg-customGray"
                 >
                   <TransactionCartIcon />
 
@@ -84,7 +89,7 @@ export default function AccountPage() {
 
                     <span className="text-sm opacity-80 flex flex-col">
                       {order.items.map((i, index) => (
-                        <span key={index}>• {i.productName} </span>
+                        <span key={index}>• {i.productName}</span>
                       ))}
                     </span>
                   </div>

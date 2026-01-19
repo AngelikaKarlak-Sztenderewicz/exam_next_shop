@@ -1,8 +1,4 @@
-type IconProps = {
-  className?: string;
-};
-
-export function MonitorIcon({ className }: IconProps) {
+export function MonitorIcon() {
   return (
     <svg
       width="80"

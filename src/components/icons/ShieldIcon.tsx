@@ -1,4 +1,4 @@
-export function Shield({ className = 'w-6 h-6 text-iconColor' }) {
+export function ShieldIcon() {
   return (
     <svg
       width="18"

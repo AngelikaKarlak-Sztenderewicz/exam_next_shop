@@ -1,4 +1,4 @@
-export function PayPallIcon({ className = 'w-8 h-6' }) {
+export function PayPallIcon() {
   return (
     <svg
       width="35"

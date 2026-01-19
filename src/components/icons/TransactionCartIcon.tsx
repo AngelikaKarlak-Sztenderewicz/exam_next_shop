@@ -1,4 +1,4 @@
-export function TransactionCartIcon({ className = 'w-6 h-6 ' }) {
+export function TransactionCartIcon() {
   return (
     <svg
       width="19"

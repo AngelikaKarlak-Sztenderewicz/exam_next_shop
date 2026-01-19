@@ -2,13 +2,13 @@
 
 import { useEffect, useRef } from 'react';
 import type { Category, Brand, Product } from '@/generated/prisma';
-import ProductCard from '@/components/ProductCard';
+import { ProductCard } from '../product';
 
 type Props = {
   recommendedProducts: (Product & { category: Category; brand: Brand })[];
 };
 
-export default function RecommendationCarousel({ recommendedProducts }: Props) {
+export function RecommendationCarousel({ recommendedProducts }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<number | null>(null);
 

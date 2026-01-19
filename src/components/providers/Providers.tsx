@@ -1,9 +1,9 @@
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
-import { SSEProvider } from '@/components/SSEProvider';
+import { SSEProvider } from '@/components/providers/SSEProvider';
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <SSEProvider>{children}</SSEProvider>

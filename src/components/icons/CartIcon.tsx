@@ -1,4 +1,4 @@
-export function CartIcon({ className = "w-6 h-6 text-iconColor" }) {
+export function CartIcon() {
   return (
     <svg
       width="24"

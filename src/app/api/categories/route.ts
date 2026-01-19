@@ -1,10 +1,6 @@
 import { ApiError } from "@/lib/apiError";
 import { prisma } from "@/lib/prisma";
 
-{
-  /* API route, który zwraca kategorie*/
-}
-
 export async function GET() {
   const categories = await prisma.category.findMany();
 

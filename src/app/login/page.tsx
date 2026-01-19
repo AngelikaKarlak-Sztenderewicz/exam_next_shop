@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Button from '@/components/Button';
 import { notify } from '@/lib/sse';
+import { Button } from '@/components/ui';
 
 type LoginForm = {
   identifier: string;
@@ -27,7 +27,6 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginForm>();
 
-  // STEP 2 – REAL LOGIN
   const onSubmit = async () => {
     const { identifier, password } = getValues();
 
@@ -54,13 +53,28 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="p-20">
-      <h2 className="text-4xl font-extrabold tracking-tight pb-8 flex justify-center">
+    <div
+      className="flex flex-col items-center justify-start
+                    py-10 sm:p-20 "
+    >
+      <h2 className="text-4xl font-extrabold tracking-tight pb-12 flex justify-center">
         <span className="text-orange-500">Nexus</span>
-        <span className="text-white">Hub</span>
+        <span>Hub</span>
       </h2>
-      <div className="max-w-md mx-auto p-6 bg-customGray rounded flex flex-col gap-4">
-        {/* STEP 1 */}
+      <div
+        className="
+          w-full
+          sm:w-[480px]
+          md:w-[520px]
+          lg:w-[560px]
+          p-8
+          bg-customGray
+          rounded
+          flex
+          flex-col
+          gap-6
+        "
+      >
         {step === 1 && (
           <form
             onSubmit={handleSubmit((data) => {
@@ -76,15 +90,15 @@ export default function LoginPage() {
 
               setStep(2);
             })}
-            className="flex flex-col gap-5"
+            className="flex flex-col gap-6"
           >
-            <h3 className="text-2xl">Sign in</h3>
+            <h3 className="text-2xl font-semibold">Sign in</h3>
 
             <div className="flex flex-col gap-1">
               <label>Email or phone number</label>
               <input
                 {...register('identifier', { required: true })}
-                className="p-2 rounded"
+                className="p-3 rounded"
                 placeholder="Email or phone"
               />
               {errors.identifier && (
@@ -94,26 +108,22 @@ export default function LoginPage() {
               )}
             </div>
 
-            <Button className="mt-4 w-full bg-blue-600 p-2 rounded">
-              Continue
-            </Button>
+            <Button className="w-full bg-blue-600 p-3 rounded">Continue</Button>
           </form>
         )}
-
-        {/* STEP 2 */}
         {step === 2 && (
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-6"
           >
-            <h3>Sign in</h3>
+            <h3 className="text-2xl font-semibold">Sign in</h3>
 
             <div className="flex flex-col gap-1">
               <label>Password</label>
               <input
                 type="password"
                 {...register('password', { required: true })}
-                className="p-2 rounded"
+                className="p-3 rounded"
                 placeholder="Password"
               />
               {errors.password && (
@@ -123,14 +133,15 @@ export default function LoginPage() {
               )}
             </div>
 
-            <Button className="mt-4 w-full bg-blue-600 p-2 rounded">
-              Sign in
-            </Button>
+            <Button className="w-full bg-blue-600 p-3 rounded">Sign in</Button>
           </form>
         )}
 
-        <p className="text-sm text-gray-400 mt-4">
-          New here? <a href="/register">Create account</a>
+        <p className="text-sm text-gray-400 text-center">
+          New here?{' '}
+          <a href="/register" className="underline">
+            Create account
+          </a>
         </p>
       </div>
     </div>

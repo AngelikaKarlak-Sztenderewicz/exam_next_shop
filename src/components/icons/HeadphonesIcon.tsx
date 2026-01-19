@@ -1,8 +1,4 @@
-type IconProps = {
-  className?: string;
-};
-
-export function HeadphonesIcon({ className }: IconProps) {
+export function HeadphonesIcon() {
   return (
     <svg
       width="80"

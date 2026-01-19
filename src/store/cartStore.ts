@@ -26,35 +26,65 @@ export const useCart = create<CartState>()(
           const { showToast } = useUIStore.getState();
 
           const existing = state.items.find((i) => i.id === item.id);
+          const qtyDelta = item.quantity ?? 1;
 
-          if (existing) {
+          if (!existing) {
+            if ((item.stock ?? 0) <= 0) {
+              showToast('Product is out of stock');
+              return state;
+            }
+            if (qtyDelta <= 0) {
+              showToast('Invalid quantity');
+              return state;
+            }
+
+            const finalQty = Math.min(qtyDelta, item.stock ?? qtyDelta);
+            if (finalQty <= 0) {
+              showToast('Product is out of stock');
+              return state;
+            }
+
+            const newItem: CartItem = {
+              ...item,
+              quantity: finalQty,
+            } as CartItem;
+
+            showToast('Product added to cart');
+
+            return {
+              items: [...state.items, newItem],
+              selectedIds: [...state.selectedIds, newItem.id],
+            };
+          }
+
+          const currentStock = existing.stock ?? 0;
+          const newQtyRaw = existing.quantity + qtyDelta;
+
+          if (newQtyRaw <= 0) {
+            showToast('Product removed from cart');
+            return {
+              items: state.items.filter((i) => i.id !== item.id),
+              selectedIds: state.selectedIds.filter((sid) => sid !== item.id),
+            };
+          }
+          if (newQtyRaw > currentStock) {
+            if (existing.quantity >= currentStock) {
+              showToast('Reached maximum available stock');
+              return state;
+            }
             const newItems = state.items.map((i) =>
-              i.id === item.id
-                ? {
-                    ...i,
-                    quantity: Math.min(
-                      i.quantity + (item.quantity ?? 1),
-                      i.stock
-                    ),
-                  }
-                : i
+              i.id === item.id ? { ...i, quantity: currentStock } : i
             );
-
-            showToast('Product quantity updated');
+            showToast('Quantity adjusted to available stock');
             return { items: newItems };
           }
 
-          const newItem: CartItem = {
-            ...item,
-            quantity: item.quantity ?? 1,
-          } as CartItem;
+          const newItems = state.items.map((i) =>
+            i.id === item.id ? { ...i, quantity: newQtyRaw } : i
+          );
 
-          showToast('Product added to cart');
-
-          return {
-            items: [...state.items, newItem],
-            selectedIds: [...state.selectedIds, newItem.id],
-          };
+          showToast('Product quantity updated');
+          return { items: newItems };
         }),
 
       removeFromCart: (id) =>
@@ -80,7 +110,7 @@ export const useCart = create<CartState>()(
       clearCart: () => set({ items: [], selectedIds: [] }),
     }),
     {
-      name: 'cart-storage', 
+      name: 'cart-storage',
     }
   )
 );

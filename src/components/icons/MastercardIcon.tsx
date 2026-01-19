@@ -1,4 +1,4 @@
-export function MastercardIcon({ className = 'w-8 h-6' }) {
+export function MastercardIcon() {
   return (
     <svg
       width="26"

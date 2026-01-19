@@ -1,8 +1,4 @@
-type IconProps = {
-  className?: string;
-};
-
-export function MouseIcon({ className }: IconProps) {
+export function MouseIcon() {
   return (
     <svg
       width="80"

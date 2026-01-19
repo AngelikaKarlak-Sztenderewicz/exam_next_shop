@@ -1,8 +1,8 @@
+import { Providers } from '@/components/providers/Providers';
 import './globals.css';
-import Providers from '@/components/Providers';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import Toast from '@/components/Toast';
+import { Footer } from '@/components/layout/Footer';
+import { Header } from '@/components/layout/Header';
+import { Toast } from '@/components/ui/Toast';
 
 export const metadata = {
   title: 'DevstockHub',
@@ -18,10 +18,12 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex flex-col min-h-screen ">
         <Providers>
-          <Header />
-          <Toast />
-          <main className="flex-1 p-4">{children}</main>
-          <Footer />
+          <div className="w-full max-w-[1536] px-4 flex flex-col min-h-screen ">
+            <Header />
+            <Toast />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>

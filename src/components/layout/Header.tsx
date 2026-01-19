@@ -1,14 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { CartIcon } from './icons/CartIcon';
-import { UserIcon } from './icons/UserIcon';
 import { useSession } from 'next-auth/react';
 import { useCart } from '@/store/cartStore';
-import Button from './Button';
 import { usePathname } from 'next/navigation';
+import { CartIcon, UserIcon } from '../icons';
+import { Button } from '../ui';
 
-export default function Header() {
+export function Header() {
   const { data: session, status } = useSession();
 
   const pathname = usePathname();
@@ -21,7 +20,7 @@ export default function Header() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-extrabold tracking-tight flex justify-center">
           <span className="text-orange-500">Nexus</span>
-          <span className="text-white">Hub</span>
+          <span>Hub</span>
         </h1>
 
         <div className="flex gap-4 items-center">
@@ -58,7 +57,7 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="flex gap-4">
+      <nav className="flex gap-4 py-5">
         <Link
           href="/"
           className={`hover:underline ${
@@ -79,6 +78,8 @@ export default function Header() {
           Products
         </Link>
       </nav>
+
+      <div className="my-3 w-full h-px bg-gray-700"></div>
     </header>
   );
 }

@@ -1,4 +1,4 @@
-export function GPayIcon({ className = 'w-8 h-6' }) {
+export function GPayIcon() {
   return (
     <svg
       width="29"

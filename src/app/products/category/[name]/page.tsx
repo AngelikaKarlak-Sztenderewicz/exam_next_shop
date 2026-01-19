@@ -1,12 +1,9 @@
-{
-  /*strona dynamiczna, renderuje produkty dla danej kategorii.*/
-}
 import { prisma } from '@/lib/prisma';
 import { notFound, redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { Breadcrumb } from '@/components/Breadcrumb';
-import ProductCard from '@/components/ProductCard';
+import { Breadcrumb } from '@/components/ui';
+import { ProductCard } from '@/components/product';
 
 interface Props {
   params: { name: string };
@@ -44,13 +41,13 @@ export default async function CategoryPage({ params }: Props) {
           },
         ]}
       />
-      <h1 className="text-3xl font-bold mb-6 text-white">
+      <h1 className="text-3xl font-bold mb-6">
         Choosen category: {category.name}
       </h1>
 
-      <div className="flex flex-wrap gap-6">
+      <div className="flex flex-wrap gap-6 ">
         {category.products.length === 0 ? (
-          <div className="text-white">No products in this category</div>
+          <div>No products in this category</div>
         ) : (
           category.products.map((p) => (
             <ProductCard

@@ -8,7 +8,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: ButtonSize;
 };
 
-export default function Button({
+export function Button({
   className = '',
   size = 'md',
   type = 'submit',
