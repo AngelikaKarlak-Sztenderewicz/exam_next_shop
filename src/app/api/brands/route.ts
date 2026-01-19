@@ -1,11 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { name } = req.query;
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const name = searchParams.get('name');
 
-  if (!name || typeof name !== 'string') {
-    return res.status(400).json({ error: 'Invalid brand name' });
+  if (!name) {
+    return NextResponse.json({ error: 'Invalid brand name' }, { status: 400 });
   }
 
   const brand = await prisma.brand.findUnique({
@@ -13,7 +14,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     include: { products: { include: { category: true } } },
   });
 
-  if (!brand) return res.status(404).json({ error: 'Brand not found' });
+  if (!brand) {
+    return NextResponse.json({ error: 'Brand not found' }, { status: 404 });
+  }
 
   const products = brand.products.map((p) => ({
     id: p.id,
@@ -24,5 +27,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     category: { id: p.category.id, name: p.category.name },
   }));
 
-  res.status(200).json({ name: brand.name, products });
+  return NextResponse.json({ name: brand.name, products });
 }
