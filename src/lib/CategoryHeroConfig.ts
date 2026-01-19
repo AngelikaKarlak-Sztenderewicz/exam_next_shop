@@ -26,28 +26,28 @@ export const CategoryHeroConfig: Record<
     title: 'Monitor',
     description:
       'Crisp visuals and smooth performance for gaming, work, and creativity.',
-    image: '/images/categories/monitor.jpg',
+    image: '',
     Icon: MonitorIcon,
   },
   headphone: {
     title: 'Headphones',
     description:
       'Immersive sound and all-day comfort for music, gaming, and calls.',
-    image: '/images/categories/headphone.jpg',
+    image: '',
     Icon: HeadphonesIcon,
   },
   keyboard: {
     title: 'Keyboard',
     description:
       'Mechanical precision or silent comfort — keyboards made to perform.',
-    image: '/images/categories/keyboard.jpg',
+    image: '',
     Icon: KeyboardIcon,
   },
   webcam: {
     title: 'Webcam',
     description:
       'Sharp video quality for streaming, meetings, and content creation.',
-    image: '/images/categories/webcam.jpg',
+    image: '',
     Icon: WebcamIcon,
   },
 };

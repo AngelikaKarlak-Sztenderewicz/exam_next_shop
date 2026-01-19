@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Exam Next JS
 
-## Getting Started
+**Exam Next JS** is a fully functional e-commerce project built with **Next.js**, allowing users to:
 
-First, run the development server:
+Browse products and categories
+View product details
+Add products to a shopping cart
+Edit cart quantities and remove items
+Checkout with address selection and payment method
+View order summary and history
 
-```bash
+## Installation
+
+1. Clone the repository
+
+git clone https://github.com/AngelikaKarlak-Sztenderewicz/exam_next_shop
+
+2. Install dependencies:
+
+npm install
+
+3. Set up environment variables in .env:
+
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/exam_shop?schema=public"
+NEXTAUTH_SECRET="randomsecretkey123"
+NEXTAUTH_URL="http://localhost:3000"
+
+4. Start PostgreSQL (if using Docker):
+
+docker-compose up -d
+
+5. Run migrations and seed the database:
+
+npx prisma migrate dev
+npm run seed
+
+6. Start the development server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**The app will be available at http://localhost:3000.**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Open the application in your browser.
 
-## Learn More
+2. Register or log in to your account.
 
-To learn more about Next.js, take a look at the following resources:
+3. Navigate the **main menu**:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Home page** – browse featured products and categories.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. **Product list** – filter by category or price, sort by newest/cheapest/most expensive.
 
-## Deploy on Vercel
+6. **Product details** – see product info, add to cart, view category.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+7. **Cart** – edit quantities, remove items, see subtotal and total.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+8. **Checkout** – select address, add notes, choose payment method, click Pay now to finalize the order.
+
+9. **Profile** – view user info and order history, logout.
+
+10. The **cart** is synced with the backend, so stock is updated automatically.
+
+11. Clicking **Pay now** saves the order in the database and redirects to the order summary page.

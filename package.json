@@ -12,7 +12,7 @@
     "generate": "npx prisma generate",
     "seed": "npx prisma db seed",
     "tables": "docker exec -it exam-shop-db-1 psql -U postgres -d exam_shop",
-     "migrations": "npx prisma migrate dev --name init && npx prisma db seed && docker exec -it exam-shop-db-1 psql -U postgres -d exam_shop",
+    "migrations": "npx prisma migrate dev --name init && npx prisma db seed",
     "reset": "npx prisma migrate reset"
   },
   "dependencies": {
