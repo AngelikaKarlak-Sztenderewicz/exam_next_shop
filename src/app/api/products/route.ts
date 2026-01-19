@@ -1,38 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import type {
+  Prisma,
+  Product as PrismaProduct,
+  Brand,
+  Category,
+} from "@/generated/prisma";
+
+
+type SortOptions = "nameAsc" | "priceAsc" | "priceDesc";
+
+export type ProductWithRelations = PrismaProduct & { category: Category; brand: Brand };
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
+  const url = new URL(req.url);
 
-  const category = searchParams.get("category") ?? undefined;
-  const minPrice = searchParams.get("minPrice")
-    ? Number(searchParams.get("minPrice"))
-    : undefined;
-  const maxPrice = searchParams.get("maxPrice")
-    ? Number(searchParams.get("maxPrice"))
-    : undefined;
-  const sort =
-    (searchParams.get("sort") as "nameAsc" | "priceAsc" | "priceDesc") ??
-    "nameAsc";
-  const limit = searchParams.get("limit")
-    ? Number(searchParams.get("limit"))
-    : 9;
-  const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
+  const category = url.searchParams.get("category") ?? undefined;
+  const minPriceRaw = url.searchParams.get("minPrice");
+  const maxPriceRaw = url.searchParams.get("maxPrice");
+  const sort = (url.searchParams.get("sort") as SortOptions) ?? "nameAsc";
+  const limit = url.searchParams.get("limit") ? Number(url.searchParams.get("limit")) : 9;
+  const page = url.searchParams.get("page") ? Number(url.searchParams.get("page")) : 1;
 
-  const where: any = {};
-  if (category && category !== "All") where.category = { name: category };
-  if (minPrice !== undefined || maxPrice !== undefined) {
-    where.price = {};
-    if (minPrice !== undefined) where.price.gte = minPrice;
-    if (maxPrice !== undefined) where.price.lte = maxPrice;
+  const where: Prisma.ProductWhereInput = {};
+
+  if (category && category !== "All") {
+    where.category = { name: category };
   }
 
-  const orderBy: any =
-    sort === "priceAsc"
-      ? { price: "asc" }
-      : sort === "priceDesc"
-      ? { price: "desc" }
-      : { name: "asc" };
+  if (minPriceRaw !== null || maxPriceRaw !== null) {
+    const priceFilter: Prisma.FloatFilter = {};
+    if (minPriceRaw !== null && minPriceRaw !== "") {
+      const p = Number(minPriceRaw);
+      if (!Number.isNaN(p)) priceFilter.gte = p;
+    }
+    if (maxPriceRaw !== null && maxPriceRaw !== "") {
+      const p = Number(maxPriceRaw);
+      if (!Number.isNaN(p)) priceFilter.lte = p;
+    }
+
+    if (Object.keys(priceFilter).length > 0) {
+      where.price = priceFilter;
+    }
+  }
+
+  const orderBy: Prisma.ProductOrderByWithRelationInput =
+    sort === "priceAsc" ? { price: "asc" } :
+    sort === "priceDesc" ? { price: "desc" } :
+    { name: "asc" };
 
   const products = await prisma.product.findMany({
     where,
@@ -44,5 +59,7 @@ export async function GET(req: NextRequest) {
 
   const total = await prisma.product.count({ where });
 
-  return NextResponse.json({ products, total });
+  const typedProducts: ProductWithRelations[] = products;
+
+  return NextResponse.json({ products: typedProducts, total });
 }

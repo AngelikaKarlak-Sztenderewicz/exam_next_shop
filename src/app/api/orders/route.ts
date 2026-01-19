@@ -3,6 +3,19 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 
+type OrderItemInput = {
+  id: number;
+  quantity: number;
+  hasProtection?: boolean;
+};
+
+type OneTimeAddress = {
+  street: string;
+  city: string;
+  zip: string;
+  country: string;
+};
+
 function generateInvoiceNumber() {
   const now = new Date();
   const yyyy = now.getFullYear();
@@ -15,40 +28,46 @@ function generateInvoiceNumber() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const body = await req.json();
-    const items: { id: number; quantity: number; hasProtection?: boolean }[] = body.items;
+    const items: OrderItemInput[] = body.items;
     const addressId: number | undefined = body.addressId;
-    const street: string | undefined = body.street;
-    const city: string | undefined = body.city;
-    const zip: string | undefined = body.zip;
-    const country: string | undefined = body.country;
+    const oneTimeAddress: OneTimeAddress | undefined = body.addressId
+      ? undefined
+      : {
+          street: body.street,
+          city: body.city,
+          zip: body.zip,
+          country: body.country,
+        };
     const paymentMethod: string = body.paymentMethod ?? 'card';
 
-    if (!Array.isArray(items) || items.length === 0) return NextResponse.json({ error: 'No items provided' }, { status: 400 });
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'No items provided' }, { status: 400 });
+    }
 
     const userId = Number(session.user.id);
 
     const createdOrder = await prisma.$transaction(async (tx) => {
-
       const user = await tx.user.findUnique({ where: { id: userId } });
       if (!user) throw new Error('User not found');
 
-     
-      const productsMap = new Map<number, { price: number; name: string; imageUrl: string | null;
-         stock: number; categoryName: string}>();
+      const productsMap = new Map<
+        number,
+        { price: number; name: string; imageUrl: string | null; stock: number; categoryName: string }
+      >();
+
       for (const it of items) {
-        const p = await tx.product.findUnique({ where: { id: it.id }, select: 
-          { price: true, name: true, imageUrl: true, stock: true, category: {
-      select: {
-        name: true,
-      },
-    }, } });
+        const p = await tx.product.findUnique({
+          where: { id: it.id },
+          select: { price: true, name: true, imageUrl: true, stock: true, category: { select: { name: true } } },
+        });
         if (!p) throw new Error(`Product not found: ${it.id}`);
         if (p.stock < it.quantity) throw new Error(`Not enough stock for ${p.name}`);
-        productsMap.set(it.id, { price: p.price, name: p.name, imageUrl: p.imageUrl ?? null,
-           stock: p.stock, categoryName: p.category.name});
+        productsMap.set(it.id, { price: p.price, name: p.name, imageUrl: p.imageUrl ?? null, stock: p.stock, categoryName: p.category.name });
       }
 
       const totalAmount = items.reduce((sum, it) => {
@@ -56,27 +75,25 @@ export async function POST(req: Request) {
         return sum + p.price * it.quantity;
       }, 0);
 
-      const orderData: any = {
+      const orderData: Parameters<typeof tx.order.create>[0]['data'] = {
         invoiceNumber: generateInvoiceNumber(),
         userId,
         status: 'PAID',
         totalAmount,
         paymentMethod,
+        street: oneTimeAddress?.street ?? '',
+        city: oneTimeAddress?.city ?? '',
+        zip: oneTimeAddress?.zip ?? '',
+        country: oneTimeAddress?.country ?? '',
       };
 
-      if (addressId !== undefined && addressId !== null) {
+      if (addressId) {
         const addr = await tx.savedAddress.findUnique({ where: { id: addressId } });
         if (!addr) throw new Error('Selected address not found');
         orderData.street = addr.street;
         orderData.city = addr.city;
         orderData.zip = addr.zip;
         orderData.country = addr.country;
-      } else {
-        if (!street || !city || !zip || !country) throw new Error('Address fields missing for one-time address');
-        orderData.street = street;
-        orderData.city = city;
-        orderData.zip = zip;
-        orderData.country = country;
       }
 
       const order = await tx.order.create({ data: orderData });
@@ -106,8 +123,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ orderId: createdOrder.id, invoiceNumber: createdOrder.invoiceNumber });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('POST /api/orders error:', err);
-    return NextResponse.json({ error: err?.message ?? 'Unknown error' }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -3,21 +3,18 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/product';
+import type { Product } from '@/types/product';
 
 type Category = { id: number; name: string };
-
-export type Product = {
-  id: number;
-  name: string;
-  price: number;
-  imageUrl: string;
-  stock: number;
-  categoryName: string;
-};
 
 interface ProductsPageClientProps {
   categories: Category[];
   initialCategory: string;
+}
+
+interface ProductsApiResponse {
+  products: Product[];
+  total: number;
 }
 
 export default function ProductsPageClient({
@@ -31,7 +28,9 @@ export default function ProductsPageClient({
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [sortOption, setSortOption] = useState('newest');
+  const [sortOption, setSortOption] = useState<
+    'newest' | 'priceAsc' | 'priceDesc'
+  >('newest');
   const [showCount, setShowCount] = useState(9);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -62,19 +61,10 @@ export default function ProductsPageClient({
       queryParams.append('page', page.toString());
 
       const res = await fetch(`/api/products?${queryParams.toString()}`);
-      const data = await res.json();
+      const data: ProductsApiResponse = await res.json();
 
-      const mapped: Product[] = (data.products || []).map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        price: p.price,
-        imageUrl: p.imageUrl,
-        stock: p.stock,
-        categoryName: p.categoryName ?? p.category?.name,
-      }));
-
-      console.log('Fetched products sample:', mapped.slice(0, 3));
-      setProducts(mapped);
+      // mapowanie nie jest już potrzebne, bo API zwraca Product[] dokładnie w tym kształcie
+      setProducts(data.products);
       setTotal(data.total ?? 0);
     };
 
@@ -129,6 +119,7 @@ export default function ProductsPageClient({
               ))}
             </div>
           </div>
+
           <div className="w-full lg:w-80">
             <h2 className="font-bold mb-2 text-2xl">Price</h2>
             <div className="flex flex-col gap-2">
@@ -161,6 +152,7 @@ export default function ProductsPageClient({
           </div>
         </div>
       </aside>
+
       <main className="flex-1 min-w-0">
         <div className="max-w-7xl mx-auto flex flex-col gap-14 p-4 lg:p-10">
           <div className="flex gap-8 flex-wrap">
@@ -170,7 +162,9 @@ export default function ProductsPageClient({
                 value={sortOption}
                 onChange={(e) => {
                   setPage(1);
-                  setSortOption(e.target.value);
+                  setSortOption(
+                    e.target.value as 'newest' | 'priceAsc' | 'priceDesc'
+                  );
                 }}
                 className="p-2 rounded"
               >
@@ -214,7 +208,7 @@ export default function ProductsPageClient({
                       price={p.price}
                       imageUrl={p.imageUrl}
                       stock={p.stock}
-                      categoryName={p.categoryName}
+                      categoryName={p.category.name}
                     />
                   ))}
                 </div>
