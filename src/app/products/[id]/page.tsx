@@ -22,9 +22,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const productId = Number(id);
 
-  console.log('Server params.id:', id);
-  console.log('Converted id:', productId);
-
   if (isNaN(productId)) {
     notFound();
   }
